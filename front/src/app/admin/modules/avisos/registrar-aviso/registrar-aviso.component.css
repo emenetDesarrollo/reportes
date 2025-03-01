@@ -1,0 +1,22 @@
+.card {
+    margin-bottom: 20px !important;
+}
+
+.dropdown-menu {
+    padding-top: 20px;
+    padding-left: 50px;
+    padding-bottom: 20px;
+    padding-right: 50px;
+}
+
+.title-categorias-ipad {
+    margin-top: -15px !important;
+    margin-bottom: -10px !important;
+}
+
+@media (min-width: 1200px) {
+    .container {
+        padding-left: 150px;
+        padding-right: 150px;
+    }
+}

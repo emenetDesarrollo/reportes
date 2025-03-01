@@ -1,0 +1,33 @@
+<div class="dropdown" (click)="closeDropdown($event)">
+    <button class="btn btn-outline-dark dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
+        data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false" [disabled]="disabled">
+        <ng-container *ngIf="type == 'many'; else simple">
+            {{ getSelectedOptions().length }} Seleccionado{{ getSelectedOptions().length !== 1 ? 's' : '' }}
+        </ng-container>
+        <ng-template #simple>
+            {{ getSelectedOptions()[0]?.label ?? 'Seleccione una opción' }}
+        </ng-template>
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <li class="form-check" *ngIf="type == 'many'">
+            <input class="form-check-input" type="checkbox" value="select-all" id="{{'select-all'+'-'+font}}"
+                [checked]="allOptionsSelected()" (change)="selectAllChanged($event)">
+            <label class="form-check-label" for="{{'select-all'+'-'+font}}">Seleccionar todo</label>
+        </li>
+        <div class="dropdown-search">
+            <input class="form-control form-control-sm" type="search" placeholder="Buscar..." aria-label="Buscar"
+                (input)="filterOptions($event)">
+        </div>
+        <ul class="dropdown-list" *ngIf="filteredOptions.length > 0">
+            <li class="form-check listaSocios" *ngFor="let option of filteredOptions">
+                <input class="form-check-input" type="checkbox" [value]="option.value" id="{{option.value+'-'+font}}"
+                    [checked]="option.checked" (change)="optionChanged(option)"
+                    [disabled]="(type == 'simple' && option.checked) || option.disabled">
+                <label class="form-check-label" for="{{option.value+'-'+font}}">{{ option.label }}</label>
+            </li>
+        </ul>
+        <div class="col-12 t-center" *ngIf="filteredOptions.length == 0">
+            <span style="font-weight: lighter;">Nada para seleccionar</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,256 @@
+<div class="card overflow-auto">
+    <div class="card-body">
+        <br>
+        <div class="d-flex justify-content-center">
+            <div class="btn-group btn-sm" role="group">
+                <button class="btn btn-light btn-sm" disabled="true">Mostrar</button>
+                <select id="itemsPerPageSelect" class="form-select form-select-sm" [(ngModel)]="itemsPerPage"
+                    (ngModelChange)="onItemsPerPageChange()">
+                    <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+                </select>
+                <button class="btn btn-light btn-sm" disabled="true">Registros</button>
+            </div>
+        </div>
+
+        <br>
+        <div class="table-continer">
+            <table class="table table-sm data-table-border custom-table">
+                <thead class="thead-light">
+                    <tr>
+                        <th *ngFor="let columna of getColumnKeys()" scope="col"
+                            [ngClass]="{'t-center': tableConfig[columna]?.center}" (click)="sortColumn(columna)"
+                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ columnasTabla[columna] }}
+                            <span *ngIf="sortBy === columna && !sortDesc && !tableConfig[columna]?.noFilter"
+                                class="t-bold"><i class="bi bi-sort-up-alt"></i></span>
+                            <span *ngIf="sortBy === columna && sortDesc && !tableConfig[columna]?.noFilter"
+                                class="t-bold"><i class="bi bi-sort-down"></i></span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="inputs" *ngFor="let columna of getColumnKeys()">
+                            <ng-container
+                                *ngIf="tableConfig[columna]?.dateSpForm || tableConfig[columna]?.singleDate; else selectColumn">
+                                <!-- Si es rango de fechas, mostramos dos campos -->
+                                <ng-container *ngIf="!tableConfig[columna]?.singleDate; else singleDateColumn">
+                                    <input type="date" [ngClass]="{'t-center': tableConfig[columna]?.center}"
+                                        class="form-control" [(ngModel)]="filterValues[columna + '_inicio']"
+                                        (change)="onItemsPerPageChange()"
+                                        style="width: 100% !important; margin-bottom: 5px;" />
+                                    <input type="date" [ngClass]="{'t-center': tableConfig[columna]?.center}"
+                                        class="form-control" [(ngModel)]="filterValues[columna + '_fin']"
+                                        (change)="onItemsPerPageChange()" style="width: 100% !important;" />
+                                </ng-container>
+
+                                <!-- Si es singleDate, mostramos solo un campo -->
+                                <ng-template #singleDateColumn>
+                                    <input type="date" [ngClass]="{'t-center': tableConfig[columna]?.center}"
+                                        class="form-control form-control-sm" [(ngModel)]="filterValues[columna]"
+                                        (change)="onItemsPerPageChange()" style="width: 100% !important;" />
+                                </ng-template>
+                            </ng-container>
+
+                            <ng-template #selectColumn>
+                                <div *ngIf="tableConfig[columna]?.selectColumn; else defaultColumn"
+                                    class="btn-group group-dropdown-form" role="group">
+                                    <app-dropdown [options]="tableConfig[columna].selectOptions ?? []" [font]="columna"
+                                        (selectionChange)="actualizarFiltro($event)"></app-dropdown>
+                                </div>
+                            </ng-template>
+
+                            <ng-template #defaultColumn>
+                                <input *ngIf="!tableConfig[columna]?.noFilter && !tableConfig[columna]?.selectColumn"
+                                    type="search" class="form-control form-control-sm"
+                                    [ngClass]="{'t-center': tableConfig[columna]?.center}"
+                                    [placeholder]="columnasTabla[columna]" [(ngModel)]="filterValues[columna]"
+                                    (input)="onItemsPerPageChange()">
+                            </ng-template>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="canSeeInfo && paginatedItems.length > 0; else sinInfo">
+                        <tr *ngFor="let item of paginatedItems">
+                            <td *ngFor="let columna of getColumnKeys()" class="check-column"
+                                [ngClass]="{'t-center': tableConfig[columna]?.center}">
+                                <ng-container *ngIf="tableConfig[columna]?.checkColumn; else actionColumn">
+                                    <label
+                                        class="form-check form-switch d-flex justify-content-center align-items-center check-column-item">
+                                        <input type="checkbox" class="form-check-input"
+                                            [value]="item[tableConfig[columna].value]"
+                                            [checked]="isCheckboxSelected(item[tableConfig[columna].value])"
+                                            (change)="toggleCheckboxSelection($event, item[tableConfig[columna].value])">
+                                    </label>
+                                </ng-container>
+                                <ng-template #actionColumn>
+                                    <ng-container *ngIf="tableConfig[columna]?.actionFilter; else money">
+                                        <section
+                                            class="d-flex justify-content-center align-items-center check-column-item">
+                                            <button type="button" class="btn btn-outline-dark btn-sm"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu t-center">
+                                                <li *ngFor="let action of tableConfig[columna]?.actions"
+                                                    class="{{action.bg}}">
+                                                    <a class="dropdown-item t-bold" href="javascript:void(0)"
+                                                        (click)="emitirIdAccion(action.nombre, item[tableConfig[columna].value])">
+                                                        <i class="bi {{action.icon}} me-1"></i> {{action.titulo}}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </section>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #money>
+                                    <ng-container *ngIf="tableConfig[columna]?.moneyColumn; else numeric">
+                                        <span [ngStyle]="getTableColumnStyle(columna, item)">{{ item[columna] != null ?
+                                            '$ '
+                                            + (item[columna] | number:'1.2-2') : 'Sin información' }}</span>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #numeric>
+                                    <ng-container *ngIf="tableConfig[columna]?.numericColumn; else percentage">
+                                        <span [ngStyle]="getTableColumnStyle(columna, item)">{{ item[columna] != null ?
+                                            (item[columna] | number:'1.0-0') : 'Sin información' }}</span>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #percentage>
+                                    <ng-container *ngIf="tableConfig[columna]?.percentageColumn; else dadges">
+                                        <span [ngStyle]="getTableColumnStyle(columna, item)">{{ item[columna] != null ?
+                                            (item[columna] | number:'1.2-2') + ' %' : 'Sin información' }}</span>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #dadges>
+                                    <ng-container *ngIf="tableConfig[columna]?.dadges; else icono">
+                                        <span class="badge bg-{{obtenerColorDadges(columna, item[columna])}}"
+                                            style="font-size: 10px;">{{item[columna]}}</span>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #icono>
+                                    <ng-container *ngIf="tableConfig[columna]?.icono; else linea">
+                                        <i class="{{item[columna]}}"></i>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #linea>
+                                    <ng-container *ngIf="tableConfig[columna]?.linea; else telefono">
+                                        <div class="spinner-grow spinner-grow-sm" role="status" [ngClass]="{
+                                            'text-success': item[columna] == 1 || item[columna] == true,
+                                            'text-danger': item[columna] == 0 || item[columna] == false
+                                        }">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #telefono>
+                                    <ng-container *ngIf="tableConfig[columna]?.telefono; else deleteColumn">
+                                        <div class="link-modal" (click)="abrirOpcionesTelefono(item[columna])">
+                                            <span>{{ obtenerFormatoNumero(item[columna]) }}</span>
+                                        </div>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #deleteColumn>
+                                    <ng-container *ngIf="tableConfig[columna]?.deleteColumn; else emitId">
+                                        <div class="link-modal"
+                                            (click)="emitirIdAccion(item[tableConfig[columna].value], tableConfig[columna].action)">
+                                            <span style="color:red;"><i class="bi bi-trash"></i></span>
+                                        </div>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #emitId>
+                                    <ng-container *ngIf="tableConfig[columna]?.emitId; else location">
+                                        <div class="link-modal"
+                                            (click)="emitirIdAccion(item[tableConfig[columna].value], tableConfig[columna].action)">
+                                            <span>{{ item[columna] ?? 'Sin información'}}</span>
+                                        </div>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #location>
+                                    <ng-container *ngIf="tableConfig[columna]?.location; else dateSpForm">
+                                        <img *ngIf="is_empty(item[columna])"
+                                            src="https://m-net.mx/reportes/images/sinmaps.png" alt="" width="22px">
+                                        <a *ngIf="!is_empty(item[columna])" target="_blank"
+                                            href="https://www.google.es/maps?q={{item[columna]}}">
+                                            <div style="width: 100%; height: 100%;">
+                                                <img src="https://m-net.mx/reportes/images/maps.png" alt=""
+                                                    width="22px">
+                                            </div>
+                                        </a>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #dateSpForm>
+                                    <ng-container *ngIf="tableConfig[columna]?.dateSpForm || tableConfig[columna]?.singleDate; else deafult">
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{
+                                            formatDate(item[columna], tableConfig[columna]?.date ?? true, tableConfig[columna]?.time ?? true) }}</span>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #deafult>
+                                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{
+                                        item[columna] ?? 'Sin información'}}</span>
+                                </ng-template>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <ng-template #sinInfo>
+                        <tr>
+                            <td [attr.colspan]="getColumnKeys().length" align="center">
+                                No hay información para mostrar
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+                <tfoot *ngIf="paginatedItems.length > 0 && hasTotalColumn()">
+                    <tr>
+                        <ng-container *ngFor="let columna of getColumnKeys()">
+                            <td *ngIf="!this.tableConfig[columna]?.totalColumn ?? false"></td>
+                            <td *ngIf="this.tableConfig[columna]?.totalColumn ?? false" class="t-bold t-center">
+                                $ {{ calcularSumaTotal(columna) | number : '1.2-2' }}
+                            </td>
+                        </ng-container>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <nav class="d-flex justify-content-center" style="margin-bottom: -15px;">
+            <ul class="pagination pagination-sm">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" (click)="goToPage(1)" aria-label="First">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="visually-hidden">First</span>
+                    </a>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" (click)="goToPage(currentPage - 1)" aria-label="Previous">
+                        <span aria-hidden="true">&lsaquo;</span>
+                        <span class="visually-hidden">Previous</span>
+                    </a>
+                </li>
+                <li class="page-item" [class.active]="page === currentPage" *ngFor="let page of pagesArray">
+                    <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <a class="page-link" (click)="goToPage(currentPage + 1)" aria-label="Next">
+                        <span aria-hidden="true">&rsaquo;</span>
+                        <span class="visually-hidden">Next</span>
+                    </a>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <a class="page-link" (click)="goToPage(totalPages)" aria-label="Last">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="visually-hidden">Last</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="col-sm-12 text-center">
+            <span *ngIf="registrosBusqueda.length > 0">
+                <br>
+                Mostrando registros del {{ getStartIndex() }} al {{ (getEndIndex() > registrosBusqueda.length ?
+                registrosBusqueda.length : getEndIndex()) }} de un total de {{ registrosBusqueda.length
+                }}
+            </span>
+        </div>
+    </div>
+</div>

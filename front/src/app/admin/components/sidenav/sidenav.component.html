@@ -1,0 +1,136 @@
+<aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+        <li class="nav-item" [routerLink]="['/']">
+            <a class="nav-link collapsed">
+                <i class="bi bi-grid"></i>
+                <span>Estadísticas</span>
+            </a>
+        </li>
+
+        <hr *ngIf="guard.permisos.reportes ||
+                   guard.permisos.instalaciones ||
+                   guard.permisos.visitas">
+        <li *ngIf="guard.permisos.reportes ||
+                   guard.permisos.instalaciones ||
+                   guard.permisos.visitas" class="nav-heading">Administración</li>
+
+        <li *ngIf="guard.permisos.reportes" class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#reportes" data-bs-toggle="collapse" aria-expanded="false">
+                <i class="bi bi-bar-chart-steps"></i><span>Reportes</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="reportes" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li *ngIf="guard.permisosModulos.reportes.generar" (click)="abrirModal('generar-reporte')">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Generar reporte</span>
+                    </a>
+                </li>
+                <li *ngIf="guard.permisosModulos.reportes.generar" (click)="abrirModal('cambio-domicilio')">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Cambio de domicilio</span>
+                    </a>
+                </li>
+                <li [routerLink]="['consulta-reportes']">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Consulta reportes</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li *ngIf="guard.permisos.instalaciones" class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#instalaciones" data-bs-toggle="collapse"
+                aria-expanded="false">
+                <i class="bi bi-tools"></i><span>Instalaciones</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="instalaciones" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li *ngIf="guard.permisosModulos.instalaciones.agendar" (click)="abrirModal('agendar-instalacion')">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Agendar instalación</span>
+                    </a>
+                </li>
+                <li [routerLink]="['consulta-instalaciones']">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Consulta instalaciones</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li *ngIf="guard.permisos.visitas" class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#visitas" data-bs-toggle="collapse" aria-expanded="false">
+                <i class="bi bi-truck"></i><span>Visitas</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="visitas" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li *ngIf="guard.permisosModulos.visitas.agendar" (click)="abrirModal('agendar-visita')">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Agendar visita</span>
+                    </a>
+                </li>
+                <li [routerLink]="['consulta-visitas']">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Consulta visitas</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <hr *ngIf="guard.permisos.poblaciones ||
+                   guard.permisos.sectores ||
+                   guard.permisos.usuarios">
+        <li *ngIf="guard.permisos.poblaciones ||
+                   guard.permisos.sectores ||
+                   guard.permisos.usuarios" class="nav-heading">Gestión</li>
+
+        <li *ngIf="guard.permisos.poblaciones" class="nav-item" (click)="abrirModal('consultar-poblacion')">
+            <a class="nav-link collapsed">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>Poblaciones</span>
+            </a>
+        </li>
+
+        <li *ngIf="guard.permisos.sectores" class="nav-item" [routerLink]="['consulta-sectores']">
+            <a class="nav-link collapsed">
+                <i class="bi bi-bezier2"></i>
+                <span>Sectores</span>
+            </a>
+        </li>
+
+        <li *ngIf="guard.permisos.avisos" class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#avisos" data-bs-toggle="collapse"
+                aria-expanded="false">
+                <i class="bi bi-broadcast"></i><span>Avisos</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="avisos" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li *ngIf="guard.permisosModulos.avisos.agregar" (click)="abrirModal('registrar-aviso')">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Agregar aviso</span>
+                    </a>
+                </li>
+                <li [routerLink]="['consulta-avisos']">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Consulta avisos</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li *ngIf="guard.permisos.usuarios" class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#usuarios" data-bs-toggle="collapse"
+                aria-expanded="false">
+                <i class="bi bi-tools"></i><span>Usuarios</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="usuarios" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li *ngIf="guard.permisosModulos.usuarios.agregar" (click)="abrirModal('registrar-usuario')">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Registrar usuario</span>
+                    </a>
+                </li>
+                <li (click)="abrirModal('consulta-usuarios')">
+                    <a>
+                        <i class="bi bi-circle"></i><span>Consulta usuarios</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</aside>

@@ -1,0 +1,63 @@
+<div class="filter">
+    <span *ngIf="formVisita.valid" class="badge bg-success">
+        &nbsp;<i class="bi bi-check-circle me-1"></i>
+    </span>
+    <span *ngIf="formVisita.invalid" class="badge bg-warning text-dark">
+        &nbsp;<i class="bi bi-exclamation-triangle me-1"></i>
+    </span>
+</div>
+<form autocomplete="off" class="row g-3 d-flex justify-content-center" [formGroup]="formVisita">
+    <div class="col-xxl-3 col-lg-6">
+        <label class="form-label required">Razón:</label>
+        <select class="form-control form-control-sm t-center" formControlName="fkCatRazonVisita" (change)="changeFkRazon()">
+            <option value="" style="display: none; visibility: hidden;">Elija una razón</option>
+            <option *ngFor="let razon of listaRazones" value="{{razon.pkCatRazonVisita}}">{{razon.razon}}</option>
+            <option value="0" style="background: rgb(182, 181, 181);">Otra razón</option>
+        </select>
+    </div>
+    <div *ngIf="formVisita.value.fkCatRazonVisita === '0' || formVisita.value.fkCatRazonVisita === 0"
+        class="col-xxl-9 col-lg-6">
+        <label class="form-label required">Otra razón:</label>
+        <input type="text" class="form-control form-control-sm" formControlName="otraRazon" placeholder="Otra razón"
+            (keypress)="soloTexto($event)">
+    </div>
+    <div *ngIf="pkVisita != 0"
+        class="col-12">
+        <label class="form-label required">Solución:</label>
+        <textarea (input)="adjustTextareaHeight($event)" rows="2" class="form-control form-control-sm" formControlName="solucion"
+            placeholder="Solución" (keypress)="soloTexto($event)"></textarea>
+    </div>
+</form>
+<div class="col-12 t-center" style="margin-top: 20px;">
+    <form autocomplete="off">
+        <div class="col-12">
+            <label class="form-label required">Disponibilidad de horario:</label>
+        </div>
+    </form>
+    <div class="col-12" style="margin-top: 5px;">
+        <div class="d-flex justify-content-center">
+            <div class="col-xxl-9 col-lg-11 col-12 row">
+                <div class="col-lg-4" *ngFor="let dia of disponibilidad; let i = index">
+                    <label class="form-label">{{ obtenerNombreDia(dia.fecha.split('T')[0])
+                        }}</label><br>
+                    <input type="datetime-local" [value]="dia.fecha" [(ngModel)]="dia.fecha" class="custom-date-input"
+                        [attr.min]="getMinDate(disponibilidad[i-1]?.fecha.split('T')[0] ?? fecha.toISOString().split('T')[0])"
+                        (change)="i === 0 ? obtenerFechaHora(dia.fecha) : aumentoFechaHija(i)"
+                        [disabled]="!instalacionPendienteValid()">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form autocomplete="off" class="row g-3" [formGroup]="formVisita">
+    <div class="col-lg-6">
+        <label class="form-label required">Descripción:</label>
+        <textarea (input)="adjustTextareaHeight($event)" rows="2" class="form-control form-control-sm" formControlName="descripcion"
+            placeholder="Descripción razón" (keypress)="soloTexto($event)"></textarea>
+    </div>
+    <div class="col-lg-6">
+        <label class="form-label">Observaciones:</label>
+        <textarea (input)="adjustTextareaHeight($event)" rows="2" class="form-control form-control-sm" formControlName="observaciones"
+            placeholder="Observaciones" (keypress)="soloTexto($event)"></textarea>
+    </div>
+</form>

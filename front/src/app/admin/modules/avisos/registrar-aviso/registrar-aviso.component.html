@@ -1,0 +1,91 @@
+<div class="modal-body dashboard">
+    <div class="pagetitle">
+        <h1>
+            {{pkAviso == 0 ? 'Agregar aviso' : 'Actualizar aviso'}}
+        </h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Avisos</li>
+                <li class="breadcrumb-item active">
+                    {{pkAviso == 0 ? 'Agregar aviso' : 'Actualizar aviso'}}
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div *ngIf="pkAviso != 0" class="filter" data-bs-toggle="dropdown">
+        <button class="btn btn-info btn-sm" style="border-radius: 10px; color: white;">
+            <i class="bi bi-info-circle"></i>
+        </button>
+    </div>
+
+    <ul class="dropdown-menu">
+        <div class="t-center">
+            <div *ngIf="detalleAviso.usuarioActualizacion && detalleAviso.fechaActualizacion">
+                <label style="color: gray;">Última
+                    actualización</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleAviso.usuarioActualizacion}}</label>
+                <br><span>{{formatDate(detalleAviso.fechaActualizacion)}}</span>
+
+                <hr>
+            </div>
+
+            <div *ngIf="detalleAviso.usuarioRegistro && detalleAviso.fechaAlta">
+                <label style="color: gray;">Registró</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleAviso.usuarioRegistro}}</label>
+                <br><span>{{formatDate(detalleAviso.fechaAlta)}}</span>
+            </div>
+        </div>
+    </ul>
+
+    <div class="col-12 dashboard" style="margin-bottom: -10px;">
+        <div class="card">
+            <div class="card-body card-w-title">
+                <form class="row g-3" autocomplete="off" [formGroup]="formAviso">
+                    <div class="col-lg-5 col-12">
+                        <label class="form-label required">Tipo aviso:</label>
+                        <select class="form-select form-select-sm" formControlName="tipoAviso">
+                            <option value="" style="display: none; visibility: hidden;">Seleccione un tipo</option>
+                            <option value="Informativo">Informativo</option>
+                            <option value="Advertencia">Advertencia</option>
+                            <option value="Urgente">Urgente</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-7 col-12">
+                        <label class="form-label required">Título</label>
+                        <input type="text" class="form-control form-control-sm" formControlName="tituloAviso"
+                            placeholder="Título" (keypress)="soloTexto($event)" maxlength="255">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label required">Descripción</label>
+                        <textarea class="form-control form-control-sm" formControlName="descripcion"
+                            placeholder="Descripción" (keypress)="soloTexto($event)"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required">Inicio</label>
+                        <input type="date" class="form-control form-control-sm" formControlName="fechaInicio"
+                            [attr.min]="fInicio" (change)="cambioFechaInicio()">
+                    </div>
+                    <div class=" col-md-6">
+                        <label class="form-label required">Fin</label>
+                        <input type="date" class="form-control form-control-sm" formControlName="fechaFin"
+                            [attr.min]="fFin">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align: center;">
+    <button *ngIf="pkAviso == 0" class="btn btn-sm btn-primary" (click)="registrarAviso()">
+        Registrar
+    </button>
+    <button *ngIf="guard.permisosModulos.poblaciones.actualizar && pkAviso != 0" class="btn btn-sm btn-warning"
+        (click)="actualizarAviso()">
+        Actualizar
+    </button>
+    <button class="btn btn-sm btn-danger" (click)="cerrarModal()">
+        {{this.formAviso.dirty ? 'Cancelar' : 'Cerrar'}}
+    </button>
+</div>

@@ -1,0 +1,228 @@
+<div class="pagetitle">
+    <h1>Estadísticas</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Inicio</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="section dashboard">
+    <div class="row">
+        <div *ngFor="let aviso of this.estadisticas.avisosMostrandose" class="col-12" style="margin-bottom: 10px;">
+            <div class="alert alert-{{obtenerClaseAviso(aviso.tipoAviso)}}  alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading">{{aviso.tituloAviso}}</h4>
+                <p style="margin-bottom: 0px !important;">{{aviso.descripcion}}</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="card info-card success">
+                <div class="card-body">
+                    <h5 class="card-title">Visitas <span>| pendientes</span></h5>
+
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-journals"></i>
+                        </div>
+                        <div class="ps-3">
+                            <ng-container
+                                *ngIf="estadisticas && estadisticas.visitasPendientes !== undefined; else cargandoTotal">
+                                <h6>
+                                    {{estadisticas.visitasPendientes ?? 0 | number:'1.0-0'}}
+                                </h6>
+
+                                <span class="text-primary small pt-1 fw-bold">
+                                    {{estadisticas.visitasPendientes == 1 ? 'visita' : 'visitas'}}
+                                </span>
+                            </ng-container>
+
+                            <ng-template #cargandoTotal>
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="card info-card primary">
+                <div class="card-body">
+                    <h5 class="card-title">Instalaciones <span>| Pendientes</span></h5>
+
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <div class="ps-3">
+                            <ng-container
+                                *ngIf="estadisticas && estadisticas.instalacionesPendientes !== undefined; else cargandoTotal">
+                                <h6>
+                                    {{estadisticas.instalacionesPendientes | number:'1.0-0'}}
+                                </h6>
+
+                                <span class="text-primary small pt-1 fw-bold">
+                                    {{estadisticas.instalacionesPendientes == 1 ? 'instalación' :
+                                    'instalaciones'}}
+                                </span>
+                            </ng-container>
+
+                            <ng-template #cargandoTotal>
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-lg-4 col-sm-6">
+            <div class="card info-card danger">
+                <div class="card-body">
+                    <h5 class="card-title">Instalaciones <span>| con retardo</span></h5>
+
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                        <div class="ps-3">
+                            <ng-container
+                                *ngIf="estadisticas && estadisticas.instalacionesPendientesConRetardo !== undefined; else cargandoTotal">
+                                <h6>
+                                    {{estadisticas.instalacionesPendientesConRetardo ?? 0 | number:'1.0-0'}}
+                                </h6>
+
+                                <span class="text-primary small pt-1 fw-bold">
+                                    {{estadisticas.instalacionesPendientesConRetardo == 1 ? 'instalación' :
+                                    'instalaciones'}}
+                                </span>
+                            </ng-container>
+
+                            <ng-template #cargandoTotal>
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-lg-12 col-sm-6">
+            <div class="card info-card warning">
+                <div class="card-body">
+                    <h5 class="card-title">Reportes <span>| pendientes</span></h5>
+
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-graph-down-arrow"></i>
+                        </div>
+                        <div class="ps-3">
+                            <ng-container
+                                *ngIf="estadisticas && estadisticas.reportesPendientes !== undefined; else cargandoTotal">
+                                <h6>
+                                    {{estadisticas.reportesPendientes ?? 0 | number:'1.0-0'}}
+                                </h6>
+
+                                <span class="text-primary small pt-1 fw-bold">
+                                    {{estadisticas.reportesPendientes == 1 ? 'reporte' : 'reportes'}}
+                                </span>
+                            </ng-container>
+
+                            <ng-template #cargandoTotal>
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-2 col-md-4 col-12">
+            <div class="card">
+                <div class="card-body card-w-title">
+                    <div class="row g-3">
+                        <div class="col-md-12 col-6">
+                            <label class="form-label required">Agrupación</label>
+                            <select class="form-control form-control-sm" [(ngModel)]="visualizacion"
+                                (change)="cambioAgrupacion()">
+                                <option value="day">Día</option>
+                                <option value="week">Semana</option>
+                                <option value="month">Mes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 col-6">
+                            <div class="group-dropdown-form">
+                                <label class="form-label required">Poblaciones</label>
+                                <app-dropdown [options]="listaPoblaciones" [font]="'poblacion'"
+                                    (selectionChange)="cambioPoblaciones($event)"></app-dropdown>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-8 col-md-8 col-12">
+            <div class="card">
+                <div class="card-body card-w-title">
+                    <div
+                        [ngStyle]="{'visibility': (estadisticas.reportesPorAgrupacion && estadisticas.reportesPorAgrupacion.length > 0 ? 'visible' : 'hidden'), 'display': (estadisticas.reportesPorAgrupacion && estadisticas.reportesPorAgrupacion.length > 0 ? 'block' : 'none')}">
+                        <canvas id="estadisticasAgrupadas"></canvas>
+                    </div>
+
+                    <div class="d-flex justify-content-center"
+                        *ngIf="estadisticas.reportesPorAgrupacion && estadisticas.reportesPorAgrupacion.length == 0">
+                        No hay estadísticas para mostrar
+                    </div>
+
+                    <div class="d-flex justify-content-center" *ngIf="!this.estadisticas.reportesPorAgrupacion">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-2 col-12">
+            <div class="card">
+                <div class="card-body card-w-title">
+                    <div class="activity" *ngIf="this.estadisticas.instalacionesPorAgrupacion">
+                        <div class="activity-item d-flex">
+                            <div class="activite-label t-bold t-right" style="padding-right: 10px; margin-left: -30px;">
+                                {{totalInstalaciones}}</div>
+                            <i class="bi bi-circle-fill activity-badge text-primary align-self-start"></i>
+                            <div class="activity-content">
+                                {{totalInstalaciones == 1 ? 'instalación' : 'instalaciones'}}
+                            </div>
+                        </div>
+                        <div class="activity-item d-flex">
+                            <div class="activite-label t-bold t-right" style="padding-right: 10px; margin-left: -30px;">
+                                {{totalReportes}}</div>
+                            <i class="bi bi-circle-fill activity-badge text-danger align-self-start"></i>
+                            <div class="activity-content">
+                                {{totalReportes == 1 ? 'reporte' : 'reportes'}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center" *ngIf="!this.estadisticas.instalacionesPorAgrupacion">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

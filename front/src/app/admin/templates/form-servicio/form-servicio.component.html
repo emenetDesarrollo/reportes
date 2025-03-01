@@ -1,0 +1,123 @@
+<div class="filter">
+    <span *ngIf="formServicio.valid" class="badge bg-success">
+        &nbsp;<i class="bi bi-check-circle me-1"></i>
+    </span>
+    <span *ngIf="formServicio.invalid" class="badge bg-warning text-dark">
+        &nbsp;<i class="bi bi-exclamation-triangle me-1"></i>
+    </span>
+</div>
+<form autocomplete="off" class="row g-3" [formGroup]="formServicio">
+    <section *ngIf="formInstalacion.value.fkCatClasificacion == 1" class="row g-3">
+        <div class="col-lg-6">
+            <label class="form-label required">ONT:</label>
+            <input type="text" class="form-control" placeholder="ONT" formControlName="ont"
+                (keypress)="soloTexto($event)" maxlength="255">
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label required">No. Serie:</label>
+            <input type="text" class="form-control" placeholder="No. Serie"
+                formControlName="noSerieOnt" (keypress)="soloTexto($event)" maxlength="255">
+        </div>
+        <div class="col-lg-4">
+            <label class="form-label required">Etiqueta spliter:</label>
+            <input type="text" class="form-control" placeholder="Etiqueta spliter"
+                formControlName="etiquetaSpliter" (keypress)="soloNumeros($event)" maxlength="255">
+        </div>
+        <div class="col-lg-4">
+            <label class="form-label required">Puerto spliter:</label>
+            <input type="text" class="form-control" placeholder="Puerto espliter"
+                formControlName="puertoSpliter" (keypress)="soloNumeros($event)" maxlength="5">
+        </div>
+        <div class="col-lg-4">
+            <label class="form-label required">Potencia:</label>
+            <input type="text" class="form-control" placeholder="Potencia"
+                formControlName="potencia" (keypress)="soloTexto($event)" maxlength="255">
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label required">Ubicación Spliter:</label>
+            <div class="input-group mb-3">
+                <a *ngIf="!is_empty(detalleInstalacion.coordenadasSpliter)"
+                    class="btn btn-outline-primary" target="_blank"
+                    href="https://www.google.es/maps?q={{detalleInstalacion.coordenadas}}">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+                <input type="text" class="form-control t-center" placeholder="Coordenadas"
+                    formControlName="coordenadasSpliter" (keypress)="soloCoordenadas($event)"
+                    maxlength="100">
+                <button [disabled]="is_empty(detalleInstalacion.coordenadasSpliter)"
+                    class="btn btn-outline-primary"
+                    (click)="parent.copiarPortapapeles(detalleInstalacion.coordenadasSpliter)">
+                    <i class="bi bi-copy"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label">Fibra:</label>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <span class="input-group-text">Inicio</span>
+                        <input type="text" class="form-control" placeholder="Inicio"
+                            formControlName="fibraInicio" (keypress)="soloNumeros($event)"
+                            maxlength="5">
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <span class="input-group-text">Fin</span>
+                        <input type="text" class="form-control" placeholder="Fin"
+                            formControlName="fibraFin" (keypress)="soloNumeros($event)"
+                            maxlength="5">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section *ngIf="formInstalacion.value.fkCatClasificacion == 2" class="row g-3" style="margin-bottom: 15px;">
+        <div class="col-lg-6">
+            <label class="form-label required">CPE:</label>
+            <input type="text" class="form-control" placeholder="CPE" formControlName="cpe"
+                (keypress)="soloTexto($event)" maxlength="255">
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label required">No. serie CPE:</label>
+            <input type="text" class="form-control" placeholder="No. serie CPE" formControlName="noSerieCpe"
+                (keypress)="soloTexto($event)" maxlength="255">
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label required">Router:</label>
+            <input type="text" class="form-control" placeholder="Router" formControlName="router"
+                (keypress)="soloTexto($event)" maxlength="255">
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label required">No. serie Router:</label>
+            <input type="text" class="form-control" placeholder="No. serie Router" formControlName="noSerieRouter"
+                (keypress)="soloTexto($event)" maxlength="255">
+        </div>
+    </section>
+
+    <hr>
+
+    <div class="col-lg-6">
+        <label class="form-label required">Red:</label>
+        <input type="text" class="form-control t-center" placeholder="Red"
+            formControlName="nombreRed" (keypress)="soloTexto($event)" maxlength="100">
+    </div>
+    <div class="col-lg-6">
+        <label class="form-label required">Contraseña:</label>
+        <div class="input-group mb-3">
+            <button *ngIf="parent.instalacionPendienteValid()" [disabled]="!parent.enableFormService()"
+                class="btn btn-outline-primary" (click)="parent.generarPassword()">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            <input type="text" class="form-control t-center" placeholder="Contraseña"
+                formControlName="passwordRed" (keypress)="soloTexto($event)" maxlength="100">
+            <button [disabled]="is_empty(formServicio.value.passwordRed)"
+                class="btn btn-outline-primary"
+                (click)="parent.copiarPortapapeles(formServicio.value.passwordRed)">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    </div>
+</form>

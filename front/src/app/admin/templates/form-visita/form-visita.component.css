@@ -1,0 +1,11 @@
+.custom-date-input {
+    border: none !important;
+    background: none !important;
+    padding: 0 !important;
+    width: 195px !important;
+    font: inherit !important;
+    color: inherit !important;
+    outline: none !important;
+    cursor: text !important;
+    margin-bottom: 5px !important;
+}

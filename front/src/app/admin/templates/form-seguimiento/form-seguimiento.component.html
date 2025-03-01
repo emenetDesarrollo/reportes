@@ -1,0 +1,33 @@
+<div class="container">
+    <h3 *ngIf="seguimiento.length == 0" class="card-title t-center" style="margin-bottom: -10px;">
+        No hay información de seguimiento
+    </h3>
+    <section *ngFor="let item of seguimiento; let last = last">
+        <ng-container *ngIf="item.type_message == 'text'; else message_imge">
+            <div class="message {{item.type}}">
+                <i *ngIf="detalleReporte.fkCatStatus <= 2 && last && item.type == 'sent'"
+                    class="bi bi-pencil-square {{item.type === 'received' ? 'left' : 'right'}}-icon"
+                    (click)="editarUltimoSeguimiento(item.info)"></i>
+                <strong *ngIf="item.type != 'sent'">{{item.usuario}}</strong>
+                <p>{{item.info}}</p>
+            </div>
+        </ng-container>
+
+        <ng-template #message_imge>
+            <div class="message-image image-{{item.type}}">
+                <i *ngIf="detalleReporte.fkCatStatus <= 2 && last && item.type == 'sent'"
+                    class="bi bi-trash {{item.type === 'received' ? 'left' : 'right'}}-icon"
+                    (click)="eliminarAnexoSeguimiento()"></i>
+                <img [src]="urlImagen(item.info)" class="card-img-top img-or-{{item.type}}" (click)="abrirImagenCompleta(item.info)">
+            </div>
+        </ng-template>
+        <div class="col-12 {{item.type == 'sent' ? 't-right' : ''}}" style="margin-top: -5px;">
+            <strong>{{item.time}}</strong>
+        </div>
+    </section>
+</div>
+
+<div class="overlay" *ngIf="imagenCompletaVisible">
+    <img [src]="imagenCompleta" class="imagen-completa" (click)="$event.stopPropagation()">
+    <button class="btn close-image" (click)="cerrarImagenCompleta()"><b>X</b></button>
+</div>

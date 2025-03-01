@@ -1,0 +1,314 @@
+<div class="modal-body dashboard">
+    <div class="pagetitle">
+        <h1>
+            {{token != undefined ? 'Actualizar información' : 'Registrar usuario'}}
+        </h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Usuarios</li>
+                <li class="breadcrumb-item active">
+                    {{token != undefined ? 'Actualizar información' : 'Registrar usuario'}}
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="col-12 dashboard" style="margin-bottom: -10px;">
+        <div class="card">
+            <div class="card-body card-w-title">
+                <ul class="nav nav-tabs nav-tabs-bordered" role="tablist">
+                    <li class="nav-item" role="presentation" (click)="page = 1">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview"
+                            aria-selected="false" role="tab">General</button>
+                    </li>
+                    <li *ngIf="token != undefined" class="nav-item" role="presentation" (click)="page = 2">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit"
+                            aria-selected="true" role="tab" tabindex="-1">Cambio de contraseña</button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-2">
+                    <div class="tab-pane fade active show" id="profile-overview" role="tabpanel">
+                        <h5 class="card-title t-center">Detalle perfil</h5>
+
+                        <form class="row g-3 t-center" autocomplete="off" [formGroup]="formDetalleUsuario">
+                            <div class="col-lg-4 col-md-6">
+                                <label for="nombre" class="form-label required">Nombre:</label>
+                                <input formControlName="nombre" type="text"
+                                    class="form-control form-control-sm t-center" id="nombre" placeholder="Nombre"
+                                    (keypress)="soloLetras($event)">
+                            </div>
+
+                            <div class="col-lg-4 col-md-6">
+                                <label for="aPaterno" class="form-label required">Apellido paterno:</label>
+                                <input formControlName="aPaterno" type="text"
+                                    class="form-control form-control-sm t-center" id="aPaterno"
+                                    placeholder="Apellido paterno" (keypress)="soloLetras($event)">
+                            </div>
+
+                            <div class="col-lg-4 col-md-6">
+                                <label for="aMaterno" class="form-label">Apellido materno:</label>
+                                <input formControlName="aMaterno" type="text"
+                                    class="form-control form-control-sm t-center" id="aMaterno"
+                                    placeholder="Apellido materno" (keypress)="soloLetras($event)">
+                            </div>
+
+                            <div class="col-12">
+                                <label for="correo" class="form-label required">Correo:</label>
+                                <input formControlName="correo" type="email"
+                                    class="form-control form-control-sm t-center" id="correo" placeholder="Correo"
+                                    (keypress)="soloTexto($event)">
+                            </div>
+
+                            <div class="col-12">
+                                <div class="alert alert-info alert-dismissible fade show" role="alert"
+                                    style="margin-bottom: -5px;">
+                                    Se coloca automaticamente la contraseña <b
+                                        (click)="copiarPortapapeles('Emenet:'+year)">Emenet:{{year}}</b><br>La cual se
+                                    recomienda ser actualizada por el usuario antes de comenzar a utilizar el sistema
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div *ngIf="token == undefined" class="card"
+                            style="margin-top: 20px !important; margin-bottom: 0px !important;">
+                            <div class="card-body card-w-title">
+                                <div id="totalBloqueCerrar" class="accordion accordion-flush">
+                                    <div class="accordion-item">
+                                        <div class="d-flex justify-content-center">
+                                            <section class="col-xxl-3 col-lg-4 col-md-5 col-9">
+                                                <div class="group-dropdown-form">
+                                                    <label for="dropDown"
+                                                        class="form-label required">Sector(es):</label><br>
+                                                    <app-dropdown [options]="opcionesSectores" [font]="'sectores'"
+                                                        (selectionChange)="cambioSectores($event)"
+                                                        [disabled]="!guard.permisosModulos.usuarios.actualizar"></app-dropdown>
+                                                </div>
+                                            </section>
+                                        </div>
+                                        <section id="flush-headingOne" class="accordion-header"
+                                            style="width: 50px; font-size: 30px !important; margin-top: -60px !important; float: right;">
+                                            <button data-bs-toggle="collapse" data-bs-target="#lista-poblaciones"
+                                                aria-expanded="true" aria-controls="flush-collapseOne"
+                                                class="accordion-button">
+                                            </button>
+                                        </section>
+                                        <div id="lista-poblaciones" aria-labelledby="flush-headingOne"
+                                            data-bs-parent="#accordionFlushExample"
+                                            class="accordion-collapse collapse show">
+                                            <div class="row">
+                                                <div class="col-lg-6 t-center"
+                                                    *ngFor="let seccion of poblacionesAgrupadas">
+                                                    <h3 class="card-title">
+                                                        {{seccion.orden}}
+                                                    </h3>
+                                                    <div class="row d-flex justify-content-center">
+                                                        <div class="col-md-6 t-center"
+                                                            *ngFor="let poblacion of seccion.poblaciones">
+                                                            <span>{{poblacion.label}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="token == undefined" class="card"
+                            style="margin-top: 20px !important; margin-bottom: -5px !important;">
+                            <div class="card-body card-w-title" style="margin-bottom: -10px;">
+
+                                <div id="totalBloqueCerrar2" class="accordion accordion-flush">
+                                    <div class="accordion-item">
+                                        <div class="d-flex justify-content-center">
+                                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                                <ng-container
+                                                    *ngIf="guard.permisosModulos.usuarios.actualizar; else defaultBtns">
+                                                    <li *ngFor="let perfil of listaPerfiles" class="nav-item"
+                                                        role="presentation">
+                                                        <button
+                                                            class="btn btn-{{this.formDetalleUsuario.value.pkPerfil != perfil.pkCatPerfil ? 'light' : 'primary'}} btn-sm {{this.formDetalleUsuario.value.pkPerfil != perfil.pkCatPerfil ? '' : 'active'}}"
+                                                            id="pills-{{perfil.nombre}}-tab" data-bs-toggle="pill"
+                                                            attr.data-bs-target="#pills-{{perfil.nombre}}" type="button"
+                                                            role="tab" attr.aria-controls="pills-{{perfil.nombre}}"
+                                                            aria-selected="true"
+                                                            (click)="cambioPerfil(perfil.pkCatPerfil)">{{perfil.nombre}}</button>
+                                                    </li>
+                                                </ng-container>
+                                                <ng-template #defaultBtns>
+                                                    <li *ngFor="let perfil of listaPerfiles" class="nav-item"
+                                                        role="presentation">
+                                                        <button
+                                                            class="btn btn-{{this.formDetalleUsuario.value.pkPerfil != perfil.pkCatPerfil ? 'light' : 'primary'}} btn-sm {{this.formDetalleUsuario.value.pkPerfil != perfil.pkCatPerfil ? '' : 'active'}}"
+                                                            id="pills-{{perfil.nombre}}-tab" data-bs-toggle="pill"
+                                                            attr.data-bs-target="#pills-{{perfil.nombre}}" type="button"
+                                                            role="tab" attr.aria-controls="pills-{{perfil.nombre}}"
+                                                            aria-selected="true" disable>{{perfil.nombre}}</button>
+                                                    </li>
+                                                </ng-template>
+                                            </ul>
+                                        </div>
+                                        <section id="flush-headingOne" class="accordion-header"
+                                            style="width: 50px; font-size: 30px !important; margin-top: -60px !important; float: right;">
+                                            <button data-bs-toggle="collapse" data-bs-target="#permisos-perfil"
+                                                aria-expanded="true" aria-controls="flush-collapseOne"
+                                                class="accordion-button">
+                                            </button>
+                                        </section>
+                                        <div id="permisos-perfil" aria-labelledby="flush-headingOne"
+                                            data-bs-parent="#accordionFlushExample2"
+                                            class="accordion-collapse collapse show">
+                                            <div *ngFor="let permiso of objPermisos" class="col-lg-4 col-md-6"
+                                                style="margin-bottom: 10px;">
+                                                <section class="col-12 d-flex justify-content-center align-items-center"
+                                                    style="margin-top: 5px;">
+                                                    <label for="{{permiso.modulo}}" class="form-label mb-0 me-2"
+                                                        style="color: black !important;">{{permiso.modulo}}</label>
+                                                    <div class="form-check form-switch">
+                                                        <input type="checkbox" id="{{permiso.modulo}}"
+                                                            class="form-check-input" [(ngModel)]="permiso.valor"
+                                                            (change)="cambioPermiso('parent', permiso)"
+                                                            [disabled]="!guard.permisosModulos.usuarios.actualizar || formDetalleUsuario.value.pkPerfil == ''">
+                                                    </div>
+                                                </section>
+
+                                                <div class="col-12">
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <div class="col-11">
+                                                            <hr>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div *ngFor="let accion of permiso.acciones"
+                                                    class="col-12 form-check form-switch f-left">
+                                                    <input type="checkbox" id="{{permiso.modulo+accion.accion}}"
+                                                        class="form-check-input" [(ngModel)]="accion.valor"
+                                                        (change)="cambioPermiso('child', permiso)"
+                                                        [disabled]="!guard.permisosModulos.usuarios.actualizar || (accion.disable ?? formDetalleUsuario.value.pkPerfil == '')">
+                                                    <label for="{{permiso.modulo+accion.accion}}"
+                                                        class="form-check-label">{{accion.accion}}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="token != undefined" class="tab-pane fade" id="profile-edit" role="tabpanel">
+                        <h5 class="card-title t-center">Contraseña nueva</h5>
+
+                        <form class="row" autocomplete="off" [formGroup]="formCambioContrasenia">
+                            <div class="col-12">
+                                <section class="row" style="margin-top: 0px !important;">
+                                    <div class="col-lg-4">
+                                        <label for="contraseniaAntigua" class="form-label required">Contraseña
+                                            actual:</label>
+                                        <div class="input-group">
+                                            <input formControlName="contraseniaAntigua"
+                                                [type]="showOldPassword ? 'text' : 'password'"
+                                                class="form-control form-control-sm" id="contraseniaAntigua"
+                                                placeholder="Contraseña Actual" (keypress)="soloTexto($event)"
+                                                maxlength="255" />
+                                            <button class="btn btn-sm btn-outline-secondary"
+                                                (click)="togglePassword('old')">
+                                                <i class="bi"
+                                                    [ngClass]="showOldPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <label for="contraseniaNueva" class="form-label required">Contraseña
+                                            nueva:</label>
+                                        <div class="input-group">
+                                            <input formControlName="contraseniaNueva"
+                                                [type]="showNewPassword ? 'text' : 'password'"
+                                                class="form-control form-control-sm" id="contraseniaNueva"
+                                                placeholder="Contraseña Nueva" (keypress)="soloTexto($event)"
+                                                maxlength="255" />
+                                            <button class="btn btn-sm btn-outline-secondary"
+                                                (click)="togglePassword('new')">
+                                                <i class="bi"
+                                                    [ngClass]="showNewPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <label for="confContraseniaNueva" class="form-label required">Confirmar
+                                            contraseña:</label>
+                                        <div class="input-group">
+                                            <input formControlName="confContraseniaNueva"
+                                                [type]="showConfirmPassword ? 'text' : 'password'"
+                                                class="form-control form-control-sm" id="confContraseniaNueva"
+                                                placeholder="Confirmar contraseña" (keypress)="soloTexto($event)"
+                                                maxlength="255" />
+                                            <button class="btn btn-sm btn-outline-secondary"
+                                                (click)="togglePassword('confirm')">
+                                                <i class="bi"
+                                                    [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </form>
+
+                        <div *ngIf="invalidSamePassword" class="col-12" style="margin-top: 20px; margin-bottom: -15px;">
+                            <div class="alert alert-info alert-dismissible fade show t-center t-bold" role="alert">
+                                Las contraseñas no coinciden
+                                <button class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+
+                        <div *ngIf="invalidPassword" class="col-12" style="margin-top: 20px; margin-bottom: -15px;">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <b>La contraseña:</b>
+                                <br>&nbsp;
+                                <ul>
+                                    <li *ngIf="lengthPassword">
+                                        Debe contener al menos 8 caracteres.
+                                    </li>
+                                    <li *ngIf="mayusPassword">
+                                        Debe contener al menos una mayuscula.
+                                    </li>
+                                    <li *ngIf="numberPassword">
+                                        Debe contener al menos un número.
+                                    </li>
+                                    <li *ngIf="secuenPassword">
+                                        No debe contener secuencias de 3 caracteres o más. Ej. (abc, 123, etc).
+                                    </li>
+                                </ul>
+                                <button class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align: center;">
+    <button *ngIf="token == undefined" class="btn btn-sm btn-primary" (click)="registrarUsuario()">
+        Registrar
+    </button>
+    <button *ngIf="token != undefined && page == 1" class="btn btn-sm btn-warning"
+        (click)="actualizarInformacionUsuario()">
+        Guardar cambios
+    </button>
+    <button *ngIf="token != undefined && page == 2" class="btn btn-sm btn-warning"
+        (click)="actualizarPasswordUsuario()">
+        Actualizar
+    </button>
+    <button class="btn btn-sm btn-danger" (click)="cerrarModal()">
+        {{this.formDetalleUsuario.dirty ? 'Cancelar' : 'Cerrar'}}
+    </button>
+</div>

@@ -1,0 +1,33 @@
+<div class="pagetitle">
+    <h1>Reportes</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Reportes</li>
+            <li class="breadcrumb-item active">{{statusConsulta == 1 ? 'Pendientes' : 'Atendidos'}}</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section dashboard">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body row g-3" style="margin-top: 0px;  position: relative;">
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <label for="dropDown" class="form-label t-bold required">Status:</label><br>
+                        <select class="form-control t-center form-control-sm" [(ngModel)]="statusConsulta" (change)="enviarBusqueda()">
+                            <option value="1">Pendientes 🛠️</option>
+                            <option value="5">Atendidos ✅</option>
+                        </select>
+                    </div>
+
+                    <div class="botonera">
+                        <button class="btn btn-success btn-sm" (click)="exportarExcel()">Exportar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <app-datatable [columnasTabla]="columnasTabla" [tableConfig]="tableConfig" [datosTabla]="datosTabla" (actionSelected)="actionSelected($event)" [tableType]="'dynamic'"></app-datatable>
+    </div>
+</section>

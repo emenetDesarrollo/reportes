@@ -1,0 +1,58 @@
+.hiddable {
+    margin-top: 10px;
+    margin-bottom: 0px !important;
+}
+
+.hiddable .card-body {
+    margin-bottom: -20px !important;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(161, 161, 161, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+}
+
+.imagen-completa {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.close-image {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1300;
+}
+
+.btn-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1300;
+}
+
+.btn-arrow.left {
+    left: 20px;
+}
+
+.btn-arrow.right {
+    right: 20px;
+}

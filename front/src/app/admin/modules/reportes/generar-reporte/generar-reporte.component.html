@@ -1,0 +1,214 @@
+<div class="modal-body dashboard">
+    <div class="pagetitle">
+        <h1>
+            {{pkReporte != 0 ? 'Reporte ' + (detalleReporte.identificador ?? '') + ' - ' +
+            (formClienteDomicilio.value.nombreCliente ?? '') : 'Generar reporte' }}
+            <div *ngIf="pkReporte != 0" role="status"
+                class="spinner-grow spinner-grow-sm {{!formClienteDomicilio.invalid ? 'text-primary' : 'text-warning'}}"
+                style="position: absolute; margin-top: 6px; margin-left: 10px;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Reportes</li>
+                <li class="breadcrumb-item active">{{pkReporte != 0 ? 'Reporte' : 'Generar reporte'}}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div *ngIf="pkReporte != 0" class="filter" data-bs-toggle="dropdown">
+        <button class="btn btn-info btn-sm" style="border-radius: 10px; color: white;">
+            <i class="bi bi-info-circle"></i>
+        </button>
+    </div>
+
+    <ul class="dropdown-menu">
+        <div class="t-center">
+            <div *ngIf="detalleReporte.usuarioActualizacion && detalleReporte.fechaActualizacion">
+                <label style="color: gray;">Última
+                    actualización</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleReporte.usuarioActualizacion}}</label>
+                <br><span>{{detalleReporte.fechaActualizacion}}</span>
+
+                <hr>
+            </div>
+
+            <div *ngIf="detalleReporte.usuarioRegistro && detalleReporte.fechaRegistro">
+                <label style="color: gray;">Registró</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleReporte.usuarioRegistro}}</label>
+                <br><span>{{detalleReporte.fechaRegistro}}</span>
+            </div>
+            <div *ngIf="detalleReporte.usuarioRetoma && detalleReporte.fechaRetoma">
+                <br>
+                <label style="color: gray;">Retomó</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleReporte.usuarioRetoma}}</label>
+                <br><span>{{detalleReporte.fechaRetoma}}</span>
+            </div>
+            <div *ngIf="detalleReporte.usuarioAtencion && detalleReporte.fechaAtencion">
+                <br>
+                <label style="color: gray;">Atendiendo</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleReporte.usuarioAtencion}}</label>
+                <br><span>{{detalleReporte.fechaAtencion}}</span>
+            </div>
+            <div *ngIf="detalleReporte.usuarioSoluciono && detalleReporte.usuarioSoluciono">
+                <br>
+                <label style="color: gray;">Solucionó</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleReporte.usuarioSoluciono}}</label>
+                <br><span>{{detalleReporte.fechaSoluciono}}</span>
+            </div>
+        </div>
+    </ul>
+
+    <div *ngIf="detalleReporte.fkCatStatus == 2" class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-primary alert-dismissible fade show t-center" role="alert"
+                style="margin-bottom: 20px;">
+                <i class="bi bi-info-circle me-1"></i>
+                Atendiendo <b>{{detalleReporte.usuarioAtencion}} - {{detalleReporte.fechaAtencion}}</b>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="detalleReporte.fkCatStatus == 3" class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-info alert-dismissible fade show t-center" role="alert"
+                style="margin-bottom: 20px;">
+                <i class="bi bi-info-circle me-1"></i>
+                Solucionó <b>{{detalleReporte.usuarioAtencion}} - {{detalleReporte.fechaAtencion}}</b>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="detalleReporte.fkCatStatus == 4" class="alert alert-danger alert-dismissible fade show t-center"
+        role="alert" style="margin-bottom: 20px;">
+        <i class="bi bi-info-circle me-1"></i>
+        Canceló <b>{{detalleReporte.usuarioCancelacion}} - {{detalleReporte.fechaCancelacion}}</b>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="col-12 dashboard">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Detalle reporte</h5>
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation" (click)="cambioPage('0')">
+                        <button class="nav-link active" id="cliente-domicilio-tab" data-bs-toggle="tab"
+                            data-bs-target="#cliente-domicilio" type="button" role="tab"
+                            aria-controls="cliente-domicilio" aria-selected="true">
+                            Cliente & Domicilio <b *ngIf="cambiosFormClienteDomicilio" class="t-red">*</b>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation" (click)="cambioPage('0')">
+                        <button class="nav-link" id="reporte-tab" data-bs-toggle="tab" data-bs-target="#reporte"
+                            type="button" role="tab" aria-controls="reporte" aria-selected="true">
+                            Reporte <b *ngIf="cambiosFormReporte" class="t-red">*</b>
+                        </button>
+                    </li>
+                    <li *ngIf="this.pkReporte != 0" class="nav-item" role="presentation" (click)="cambioPage('1')">
+                        <button class="nav-link" id="seguimiento-tab" data-bs-toggle="tab" data-bs-target="#seguimiento"
+                            type="button" role="tab" aria-controls="seguimiento" aria-selected="true">
+                            Seguimiento
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-2" id="myTabContent">
+                    <div class="tab-pane fade show active" id="cliente-domicilio" role="tabpanel"
+                        aria-labelledby="home-tab">
+                        <app-form-cliente-domicilio
+                            [formClienteDomicilio]="this.formClienteDomicilio"
+                            [listaClientesMyBussines]="this.listaClientesMyBussines"
+                            [listaPoblaciones]="this.listaPoblaciones"
+                            [detalleInstalacion]="this.detalleReporte"
+                            [telefonos]="this.telefonos"
+                            [pkInstalacion]="this.pkReporte"
+                            [mails]="false"
+                        ></app-form-cliente-domicilio>
+                    </div>
+                    <div class="tab-pane fade show" id="reporte" role="tabpanel"
+                        aria-labelledby="home-tab">
+                        <app-form-reporte
+                            [pkReporte]="this.pkReporte"
+                            [detalleReporte]="this.detalleReporte"
+                            [formReporte]="this.formReporte"
+                            [disponibilidad]="this.disponibilidad"
+                            [fecha]="this.fecha"
+                            [listaProblemas]="this.listaProblemas"
+                        ></app-form-reporte>
+                    </div>
+                    <div *ngIf="this.pkReporte != 0" class="tab-pane fade show chat-delimiter" id="seguimiento" role="tabpanel" aria-labelledby="home-tab">
+                        <app-form-seguimiento
+                            [seguimiento]="this.seguimiento"
+                            [inputSeguimiento]="this.inputSeguimiento"
+                            [infoSeguimiento]="this.infoSeguimiento"
+                            [edit]="this.edit"
+                            [detalleReporte]="this.detalleReporte"
+                            [from]="'reporte'"
+                        ></app-form-seguimiento>
+                        <div class="col-12" #modalFooter></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align: center;">
+    <ng-container *ngIf="this.pkReporte != 0 && detalleReporte.fkCatStatus <= 2 && (seguimientoPage == '1'); else defaultButtons">
+        <div class="col-12" style="margin-bottom: -5px;">
+            <div class="container">
+                <div class="input-group mb-3">
+                    <textarea #infoSeguimiento class="form-control form-control-sm"
+                        placeholder="Escribe..." rows="1" [(ngModel)]="inputSeguimiento.value"
+                        (input)="adjustTextareaHeight($event)"
+                        (keypress)="soloTexto($event)"></textarea>
+                    <button *ngIf="!edit.value" class="btn btn-sm btn-info" (click)="fileInput.click()">
+                        <i class="bi bi-upload"></i></button>
+                    <input #fileInput type="file" (change)="agregarAnexoSeguimiento($event)" style="display: none">
+                    <button *ngIf="!edit.value" class="btn btn-sm btn-primary" (click)="agregarSeguimiento('text')" style="border-top-right-radius: 6px; border-bottom-right-radius: 6px;">
+                        <i class="bi bi-send"></i></button>
+                    <button *ngIf="edit.value" class="btn btn-sm btn-warning" (click)="actualizarSeguimiento()">
+                        <i class="bi bi-arrow-clockwise"></i></button>
+                    <button *ngIf="edit.value" class="btn btn-sm btn-danger" (click)="cancelarActualizacionSeguimiento()" style="border-top-right-radius: 6px; border-bottom-right-radius: 6px;">
+                        <i class="bi bi-x-lg"></i></button>
+                    <button class="btn btn-sm btn-outline-light">
+                        &nbsp;&nbsp;
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="cerrarModal()" style="border-top-left-radius: 6px; border-bottom-left-radius: 6px;">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    
+    <ng-template #defaultButtons>
+        <button *ngIf="pkReporte == 0" class="btn btn-sm me-2 btn-primary" (click)="validarDataForm('insert')">Generar</button>
+        <button *ngIf="guard.permisosModulos.reportes.actualizar && pkReporte != 0 && detalleReporte.fkCatStatus <= 2"
+            class="btn btn-sm me-2 btn-warning"
+            (click)="validarDataForm('update')">
+            Actualizar
+        </button>
+        <button *ngIf="guard.permisosModulos.reportes.atenderfinalizar && pkReporte != 0 && detalleReporte.fkCatStatus == 1"
+            class="btn btn-sm me-2 btn-primary"
+            (click)="atnederReporte()">
+            Comenzar
+        </button>
+        <button *ngIf="guard.permisosModulos.reportes.atenderfinalizar && pkReporte != 0 && detalleReporte.fkCatStatus == 2 && detalleReporte.pkTblUsuarioAtencion == informacionPerfil.pkTblUsuario"
+            class="btn btn-sm me-2 btn-success"
+            (click)="finalizarReporte()">
+            Finalizar
+        </button>
+        <button *ngIf="pkReporte != 0 && detalleReporte.fkCatStatus == 3"
+            class="btn btn-sm me-2 btn-warning"
+            (click)="retomarReporte()">
+            Retomar
+        </button>
+        <button class="btn btn-sm btn-danger" (click)="cerrarModal()">
+            {{changesReporte() ? 'Cancelar' : 'Cerrar'}}
+        </button>
+    </ng-template>
+</div>

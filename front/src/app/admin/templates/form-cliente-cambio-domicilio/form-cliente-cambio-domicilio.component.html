@@ -1,0 +1,148 @@
+<div class="filter">
+    <ng-container *ngIf="formClienteDomicilio.valid && validPhoneNumbers && !validPob; else warning">
+        <span class="badge bg-success">
+            &nbsp;<i class="bi bi-check-circle me-1"></i>
+        </span>
+    </ng-container>
+    
+    <ng-template #warning>
+        <span class="badge bg-warning text-dark">
+            &nbsp;<i class="bi bi-exclamation-triangle me-1"></i>
+        </span>
+    </ng-template>
+</div>
+<div class="row g-3">
+    <form autocomplete="off" class="col-lg-7" [formGroup]="formClienteDomicilio">
+        <label class="form-label required">Nombre cliente:</label>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control form-control-sm" formControlName="nombreCliente"
+                placeholder="Nombre cliente"
+                (keypress)="soloTexto($event)"
+                (input)="cambioNombreCliente()"
+                list="clientesMyBussines"
+                maxlength="255">
+            <button *ngIf="formClienteDomicilio.value.identificadorMybussines != null"
+                (click)="copiarPortapapeles(formClienteDomicilio.value.identificadorMybussines)"
+                class="btn btn-sm btn-dark">{{formClienteDomicilio.value.identificadorMybussines}}</button>
+        </div>
+
+        <datalist id="clientesMyBussines">
+            <option *ngFor="let cliente of listaClientesMyBussines" value="{{cliente.nombre}}">
+        </datalist>
+    </form>
+    <div class="col-lg-5">
+        <div *ngFor="let item of telefonos; let i = index" class="col-12">
+            <label class="form-label required">Teléfono {{telefonos.length > 1 ? i+1 :
+                ''}}:</label>
+            <div class="input-group mb-3">
+                <button *ngIf="item.telefono.length == 10" class="btn btn-sm btn-outline-primary" (click)="llamarCliente(item.telefono)"><i class="bi bi-telephone-forward"></i></button>
+                <button *ngIf="item.telefono.length == 10" class="btn btn-sm btn-outline-success" (click)="mensajeCliente(item.telefono)"><i class="bi bi-whatsapp"></i></button>
+                <input type="tel" class="form-control form-control-sm t-center" placeholder="Teléfono"
+                    [(ngModel)]="item.telefono" (keypress)="soloNumeros($event)"
+                    mask="(000) 000-0000" maxlength="14"
+                    [disabled]="detalleInstalacion.fkCatStatus >= 3">
+                <button *ngIf="telefonos.length > 1 && instalacionPendienteValid()"
+                    class="btn btn-sm btn-outline-danger" (click)="telefonos.splice(i, 1)">x</button>
+                <button *ngIf="(i == telefonos.length - 1) && instalacionPendienteValid()"
+                    class="btn btn-sm btn-outline-info"
+                    (click)="telefonos.push({telefono:''})">+</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 10px; margin-bottom: -25px;">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title t-center">Domicilio actual</h3>
+                <form autocomplete="off" class="row g-3" [formGroup]="formClienteDomicilio">
+                    <div class="col-12" style="margin-bottom: -10px;">
+                        <label class="form-label {{required('coordenadas')}}">Coordenadas:</label>
+                        <div class="input-group mb-3">
+                            <a *ngIf="pkInstalacion == 0" class="btn btn-sm btn-outline-warning" target="_blank"
+                                href="https://www.google.com/maps/">🌎</a>
+                            <a *ngIf="pkInstalacion != 0" class="btn btn-sm btn-outline-primary" target="_blank"
+                                href="https://www.google.es/maps?q={{detalleInstalacion.coordenadas}}"><i
+                                    class="bi bi-box-arrow-up-right"></i></a>
+                            <input type="text" class="form-control form-control-sm t-center" formControlName="coordenadas"
+                                placeholder="Coordenadas" (keypress)="soloCoordenadas($event)"
+                                (keyup.enter)="rellenarInformacionCoordenadas(1)" maxlength="100">
+                            <button *ngIf="instalacionPendienteValid()" class="btn btn-sm btn-outline-warning"
+                                (click)="rellenarInformacionCoordenadas(1)">🔎</button>
+                            <button *ngIf="pkInstalacion != 0" class="btn btn-sm btn-outline-primary"
+                                (click)="copiarPortapapeles(detalleInstalacion.coordenadas)"><i
+                                    class="bi bi-copy"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="group-dropdown-form">
+                            <label for="dropDown" class="form-label required">Población:</label><br>
+                            <app-dropdown [options]="listaPoblaciones" [font]="'poblacion'" [type]="'simple'"
+                                [disabled]="!instalacionPendienteValid()"></app-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6">
+                        <label class="form-label">Dirección domicilio:</label>
+                        <textarea (input)="adjustTextareaHeight($event)" rows="2" class="form-control form-control-sm"
+                            formControlName="direccionDomicilio" placeholder="Dirección"
+                            (keypress)="soloTexto($event)"></textarea>
+                    </div>
+                    <div class="col-xxl-6">
+                        <label class="form-label">Referencias domicilio:</label>
+                        <textarea (input)="adjustTextareaHeight($event)" rows="2" class="form-control form-control-sm"
+                            formControlName="referenciasDomicilio" placeholder="Referencias domicilio"
+                            (keypress)="soloTexto($event)"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title t-center">Nuevo domicilio</h3>
+                <form autocomplete="off" class="row g-3" [formGroup]="formClienteDomicilio">
+                    <div class="col-12" style="margin-bottom: -10px;">
+                        <label class="form-label {{required('newCoordenadas')}}">Coordenadas:</label>
+                        <div class="input-group mb-3">
+                            <a *ngIf="pkInstalacion == 0" class="btn btn-sm btn-outline-warning" target="_blank"
+                                href="https://www.google.com/maps/">🌎</a>
+                            <a *ngIf="pkInstalacion != 0" class="btn btn-sm btn-outline-primary" target="_blank"
+                                href="https://www.google.es/maps?q={{detalleInstalacion.newCoordenadas}}"><i
+                                    class="bi bi-box-arrow-up-right"></i></a>
+                            <input type="text" class="form-control form-control-sm  t-center" formControlName="newCoordenadas"
+                                placeholder="Coordenadas" (keypress)="soloCoordenadas($event)"
+                                (keyup.enter)="rellenarInformacionCoordenadas(2)" maxlength="100">
+                            <button *ngIf="instalacionPendienteValid()" class="btn btn-sm btn-outline-warning"
+                                (click)="rellenarInformacionCoordenadas(2)">🔎</button>
+                            <button *ngIf="pkInstalacion != 0" class="btn btn-sm btn-outline-primary"
+                                (click)="copiarPortapapeles(detalleInstalacion.newCoordenadas)"><i
+                                    class="bi bi-copy"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="group-dropdown-form">
+                            <label for="dropDown" class="form-label required">Población:</label><br>
+                            <app-dropdown [options]="newListaPoblaciones" [font]="'newPoblacion'" [type]="'simple'"
+                                [disabled]="!instalacionPendienteValid()"></app-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6">
+                        <label class="form-label">Dirección domicilio:</label>
+                        <textarea (input)="adjustTextareaHeight($event)" rows="2" class="form-control form-control-sm"
+                            formControlName="newDireccionDomicilio" placeholder="Dirección"
+                            (keypress)="soloTexto($event)"></textarea>
+                    </div>
+                    <div class="col-xxl-6">
+                        <label class="form-label">Referencias domicilio:</label>
+                        <textarea (input)="adjustTextareaHeight($event)" rows="2" class="form-control form-control-sm"
+                            formControlName="newReferenciasDomicilio" placeholder="Referencias domicilio"
+                            (keypress)="soloTexto($event)"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

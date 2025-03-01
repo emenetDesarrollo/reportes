@@ -1,0 +1,226 @@
+<div class="modal-body dashboard">
+    <div class="pagetitle">
+        <h1>
+            {{pkVisita != 0 ? 'Visita ' + (detalleVisita.identificador ?? '') + ' - ' +
+            (formClienteDomicilio.value.nombreCliente ?? '') : 'Agendar visita' }}
+            <div *ngIf="pkVisita != 0" role="status"
+                class="spinner-grow spinner-grow-sm {{!formClienteDomicilio.invalid ? 'text-primary' : 'text-warning'}}"
+                style="position: absolute; margin-top: 6px; margin-left: 10px;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Visitas</li>
+                <li class="breadcrumb-item active">{{pkVisita != 0 ? 'Visita agendada' : 'Agendar
+                    visita'}}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div *ngIf="pkVisita != 0" class="filter" data-bs-toggle="dropdown">
+        <button class="btn btn-info btn-sm" style="border-radius: 10px; color: white;">
+            <i class="bi bi-info-circle"></i>
+        </button>
+    </div>
+
+    <ul class="dropdown-menu">
+        <div class="t-center">
+            <div *ngIf="detalleVisita.usuarioActualizacion && detalleVisita.fechaActualizacion">
+                <label style="color: gray;">Última
+                    actualización</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleVisita.usuarioActualizacion}}</label>
+                <br><span>{{detalleVisita.fechaActualizacion}}</span>
+
+                <hr>
+            </div>
+
+            <div *ngIf="detalleVisita.usuarioRegistro && detalleVisita.fechaRegistro">
+                <label style="color: gray;">Agendó</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleVisita.usuarioRegistro}}</label>
+                <br><span>{{detalleVisita.fechaRegistro}}</span>
+            </div>
+            <div *ngIf="detalleVisita.usuarioRetoma && detalleVisita.fechaRetoma">
+                <br>
+                <label style="color: gray;">Retomó</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleVisita.usuarioRetoma}}</label>
+                <br><span>{{detalleVisita.fechaRetoma}}</span>
+            </div>
+            <div *ngIf="detalleVisita.usuarioCancelacion && detalleVisita.fechaCancelacion">
+                <br>
+                <label style="color: gray;">Cancelada por</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleVisita.usuarioCancelacion}}</label>
+                <br><span>{{detalleVisita.fechaCancelacion}}</span>
+            </div>
+            <div *ngIf="detalleVisita.usuarioAtencion && detalleVisita.fechaAtencion">
+                <br>
+                <label style="color: gray;">Atendiendo</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleVisita.usuarioAtencion}}</label>
+                <br><span>{{detalleVisita.fechaAtencion}}</span>
+            </div>
+            <div *ngIf="detalleVisita.usuarioFinalizacion && detalleVisita.usuarioFinalizacion">
+                <br>
+                <label style="color: gray;">Finalizada por</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleVisita.usuarioFinalizacion}}</label>
+                <br><span>{{detalleVisita.fechaFinalizacion}}</span>
+            </div>
+        </div>
+    </ul>
+
+    <div *ngIf="detalleVisita.fkCatStatus == 2" class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-primary alert-dismissible fade show t-center" role="alert"
+                style="margin-bottom: 20px;">
+                <i class="bi bi-info-circle me-1"></i>
+                Atendiendo <b>{{detalleVisita.usuarioAtencion}} - {{detalleVisita.fechaAtencion}}</b>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="detalleVisita.fkCatStatus == 3" class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-info alert-dismissible fade show t-center" role="alert"
+                style="margin-bottom: 20px;">
+                <i class="bi bi-info-circle me-1"></i>
+                Finalizó <b>{{detalleVisita.usuarioFinalizacion}} - {{detalleVisita.fechaFinalizacion}}</b>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="detalleVisita.fkCatStatus == 4" class="alert alert-danger alert-dismissible fade show t-center"
+        role="alert" style="margin-bottom: 20px;">
+        <i class="bi bi-info-circle me-1"></i>
+        Canceló <b>{{detalleVisita.usuarioCancelacion}} - {{detalleVisita.fechaCancelacion}}</b>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="col-12 dashboard">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Detalle visita</h5>
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation" (click)="cambioPage(false)">
+                        <button class="nav-link active" id="cliente-domicilio-tab" data-bs-toggle="tab"
+                            data-bs-target="#cliente-domicilio" type="button" role="tab"
+                            aria-controls="cliente-domicilio" aria-selected="true">
+                            Cliente & Domicilio <b *ngIf="cambiosFormClienteDomicilio" class="t-red">*</b>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation" (click)="cambioPage(false)">
+                        <button class="nav-link" id="visita-tab" data-bs-toggle="tab" data-bs-target="#visita"
+                            type="button" role="tab" aria-controls="visita" aria-selected="true">
+                            Visita <b *ngIf="cambiosFormVisita" class="t-red">*</b>
+                        </button>
+                    </li>
+                    <li *ngIf="this.pkVisita != 0" class="nav-item" role="presentation"
+                        (click)="cambioPage(true)">
+                        <button class="nav-link" id="seguimiento-tab" data-bs-toggle="tab" data-bs-target="#seguimiento"
+                            type="button" role="tab" aria-controls="seguimiento" aria-selected="true">
+                            Seguimiento
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-2" id="myTabContent">
+                    <div class="tab-pane fade show active" id="cliente-domicilio" role="tabpanel"
+                        aria-labelledby="home-tab">
+                        <app-form-cliente-domicilio
+                            [formClienteDomicilio]="this.formClienteDomicilio"
+                            [listaClientesMyBussines]="this.listaClientesMyBussines"
+                            [listaPoblaciones]="this.listaPoblaciones"
+                            [detalleInstalacion]="this.detalleVisita"
+                            [telefonos]="this.telefonos"
+                            [pkInstalacion]="this.pkVisita"
+                            [mails]="false">
+                        </app-form-cliente-domicilio>
+                    </div>
+                    <div class="tab-pane fade show" id="visita" role="tabpanel" aria-labelledby="home-tab">
+                        <app-form-visita
+                            [pkVisita]="this.pkVisita"
+                            [detalleVisita]="this.detalleVisita"
+                            [formVisita]="this.formVisita"
+                            [disponibilidad]="this.disponibilidad"
+                            [fecha]="this.fecha"
+                            [listaRazones]="this.listaRazones">
+                        </app-form-visita>
+                    </div>
+                    <div *ngIf="this.pkVisita != 0" class="tab-pane fade show chat-delimiter" id="seguimiento" role="tabpanel" aria-labelledby="home-tab">
+                        <app-form-seguimiento
+                            [seguimiento]="this.seguimiento"
+                            [inputSeguimiento]="this.inputSeguimiento"
+                            [infoSeguimiento]="this.infoSeguimiento"
+                            [edit]="this.edit"
+                            [detalleReporte]="this.detalleVisita"
+                            [from]="'visita'"
+                        ></app-form-seguimiento>
+                        <div class="col-12" #modalFooter></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align: center;">
+    <ng-container *ngIf="this.pkVisita != 0 && detalleVisita.fkCatStatus <= 2 && seguimientoPage; else defaultButtons">
+        <div class="col-12" style="margin-bottom: -5px;">
+            <div class="container">
+                <div class="input-group mb-3">
+                    <textarea #infoSeguimiento class="form-control form-control-sm"
+                        placeholder="Escribe..." rows="1" [(ngModel)]="inputSeguimiento.value"
+                        (input)="adjustTextareaHeight($event)"
+                        (keypress)="soloTexto($event)"></textarea>
+                    <button *ngIf="!edit.value" class="btn btn-sm btn-info" (click)="fileInput.click()">
+                            <i class="bi bi-upload"></i></button>
+                    <input #fileInput type="file" (change)="agregarAnexoSeguimiento($event)" style="display: none">
+                    <button *ngIf="!edit.value" class="btn btn-sm btn-primary" (click)="agregarSeguimiento('text')" style="border-top-right-radius: 6px; border-bottom-right-radius: 6px;">
+                        <i class="bi bi-send"></i></button>
+                    <button *ngIf="edit.value" class="btn btn-sm btn-warning" (click)="actualizarSeguimiento()">
+                        <i class="bi bi-arrow-clockwise"></i></button>
+                    <button *ngIf="edit.value" class="btn btn-sm btn-danger" (click)="cancelarActualizacionSeguimiento()" style="border-top-right-radius: 6px; border-bottom-right-radius: 6px;">
+                        <i class="bi bi-x-lg"></i></button>
+                    <button class="btn btn-sm btn-outline-light">
+                        &nbsp;&nbsp;
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="cerrarModal()" style="border-top-left-radius: 6px; border-bottom-left-radius: 6px;">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+
+    <ng-template #defaultButtons>
+        <button *ngIf="pkVisita == 0" class="btn btn-sm me-2 btn-primary" (click)="validarDataForm('insert')">Agendar</button>
+        <button *ngIf="guard.permisosModulos.visitas.actualizar && pkVisita != 0 && detalleVisita.fkCatStatus <= 2"
+            class="btn btn-sm me-2 btn-warning"
+            (click)="validarDataForm('update')">
+            Actualizar
+        </button>
+        <button *ngIf="guard.permisosModulos.visitas.atenderfinalizar && pkVisita != 0 && detalleVisita.fkCatStatus == 1"
+            class="btn btn-sm me-2 btn-primary"
+            (click)="atnederVisita()">
+            Comenzar
+        </button>
+        <button *ngIf="guard.permisosModulos.visitas.atenderfinalizar && pkVisita != 0 && detalleVisita.fkCatStatus == 2 && detalleVisita.pkTblUsuarioAtencion == informacionPerfil.pkTblUsuario"
+            class="btn btn-sm me-2 btn-success"
+            (click)="finalizarVisita()">
+            Finalizar
+        </button>
+        <button *ngIf="guard.permisosModulos.visitas.cancelarretomar && pkVisita != 0 && detalleVisita.fkCatStatus <= 2 && detalleVisita.pkTblUsuarioAtencion == informacionPerfil.pkTblUsuario"
+            class="btn btn-sm me-2 btn-info"
+            (click)="visitaNoExitosa()">
+            No exitosa
+        </button>
+        <button *ngIf="guard.permisosModulos.visitas.cancelarretomar && pkVisita != 0 && detalleVisita.fkCatStatus == 4"
+            class="btn btn-sm me-2 btn-warning"
+            (click)="retomarVisita()">
+            Retomar
+        </button>
+        <button class="btn btn-sm btn-danger" (click)="cerrarModal()">
+            {{changesVisita() ? 'Cancelar' : 'Cerrar'}}
+        </button>
+    </ng-template>
+</div>

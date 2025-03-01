@@ -1,0 +1,71 @@
+<div class="filter">
+    <span *ngIf="formInstalacion.valid" class="badge bg-success">
+        &nbsp;<i class="bi bi-check-circle me-1"></i>
+    </span>
+    <span *ngIf="formInstalacion.invalid" class="badge bg-warning text-dark">
+        &nbsp;<i class="bi bi-exclamation-triangle me-1"></i>
+    </span>
+</div>
+<form autocomplete="off" class="row g-3" [formGroup]="formInstalacion">
+    <div class="col-lg-3 col-md-6">
+        <label class="form-label">Plan:</label>
+        <select class="form-control form-control-sm t-center" formControlName="pkPlanInternet">
+            <option value="" style="display: none; visibility: hidden;">Elija un plan</option>
+            <option *ngFor="let plan of planes" value="{{plan.pkPlan}}">{{plan.plan}}</option>
+        </select>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <label class="form-label">Costo instalación:</label>
+        <input type="text" class="form-control form-control-sm t-center" formControlName="costoInstalacion"
+            placeholder="Costo instalación" (keypress)="soloNumeros($event)" mask="separator.2"
+            prefix="$ " maxlength="6">
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="group-dropdown-form">
+            <label for="dropDown" class="form-label required">Clasificación:</label><br>
+            <select class="form-control form-control-sm t-center" formControlName="fkCatClasificacion" (change)="parent.cambioClasificacion()">
+                <option value="" style="display: none; visibility: hidden;">Elija un
+                    clasificación</option>
+                <option value="1">Fribra Óptica</option>
+                <option value="2">Inalámbrico</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <label class="form-label required">Duración estimada:</label> &nbsp;<b
+            style="color: black;">{{this.formInstalacion.get('duracionEstimada')?.value}}
+            hrs.</b>
+        <input type="range" class="form-range" min="1" max="5" step="1"
+            formControlName="duracionEstimada" style="margin-top: 5px;">
+    </div>
+</form>
+<div class="col-12 t-center" style="margin-top: 20px;">
+    <form autocomplete="off">
+        <div class="col-12">
+            <label class="form-label required">Disponibilidad de horario:</label>
+        </div>
+    </form>
+    <div class="col-12" style="margin-top: 5px;">
+        <div class="d-flex justify-content-center">
+            <div class="col-xxl-9 col-lg-11 col-12 row">
+                <div class="col-lg-4" *ngFor="let dia of disponibilidad; let i = index">
+                    <label class="form-label">{{ obtenerNombreDia(dia.fecha.split('T')[0])
+                        }}</label><br>
+                    <input type="datetime-local" [value]="dia.fecha" [(ngModel)]="dia.fecha"
+                        class="custom-date-input"
+                        [attr.min]="getMinDate(disponibilidad[i-1]?.fecha.split('T')[0] ?? fecha.toISOString().split('T')[0])"
+                        (change)="i === 0 ? obtenerFechaHora(dia.fecha) : aumentoFechaHija(i)"
+                        [disabled]="!parent.instalacionPendienteValid()">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form autocomplete="off" class="row g-3" [formGroup]="formInstalacion">
+    <div class="col-xxl-12">
+        <label class="form-label">Observaciones:</label>
+        <textarea (input)="adjustTextareaHeight($event)" rows="2" class="form-control form-control-sm"
+            formControlName="observaciones" placeholder="Observaciones"
+            (keypress)="soloTexto($event)"></textarea>
+    </div>
+</form>

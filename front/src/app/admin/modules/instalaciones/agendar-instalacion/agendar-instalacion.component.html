@@ -1,0 +1,232 @@
+<div class="modal-body dashboard">
+    <div class="pagetitle">
+        <h1>
+            {{pkInstalacion != 0 ? 'Instalación ' + (detalleInstalacion.identificador ?? '') + ' - ' +
+            (formClienteDomicilio.value.nombreCliente ?? '') : 'Agendar instalación' }}
+            <div *ngIf="pkInstalacion != 0" role="status"
+                class="spinner-grow spinner-grow-sm {{!formClienteDomicilio.invalid && !formInstalacion.invalid && !formServicio.invalid ? 'text-primary' : 'text-warning'}}"
+                style="position: absolute; margin-top: 6px; margin-left: 10px;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Instalaciones</li>
+                <li class="breadcrumb-item active">{{pkInstalacion != 0 ? 'Instalación agendada' : 'Agendar
+                    instalación'}}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div *ngIf="pkInstalacion != 0" class="filter" data-bs-toggle="dropdown">
+        <button class="btn btn-info btn-sm" style="border-radius: 10px; color: white;">
+            <i class="bi bi-info-circle"></i>
+        </button>
+    </div>
+
+    <ul class="dropdown-menu">
+        <div class="t-center">
+            <div *ngIf="detalleInstalacion.usuarioActualizacion && detalleInstalacion.fechaActualizacion">
+                <label style="color: gray;">Última
+                    actualización</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleInstalacion.usuarioActualizacion}}</label>
+                <br><span>{{detalleInstalacion.fechaActualizacion}}</span>
+
+                <hr>
+            </div>
+
+            <div *ngIf="detalleInstalacion.usuarioRegistro && detalleInstalacion.fechaRegistro">
+                <label style="color: gray;">Agendó</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleInstalacion.usuarioRegistro}}</label>
+                <br><span>{{detalleInstalacion.fechaRegistro}}</span>
+            </div>
+            <div *ngIf="detalleInstalacion.usuarioRetoma && detalleInstalacion.fechaRetoma">
+                <br>
+                <label style="color: gray;">Retomó</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleInstalacion.usuarioRetoma}}</label>
+                <br><span>{{detalleInstalacion.fechaRetoma}}</span>
+            </div>
+            <div *ngIf="detalleInstalacion.usuarioCancelacion && detalleInstalacion.fechaCancelacion">
+                <br>
+                <label style="color: gray;">Cancelada por</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleInstalacion.usuarioCancelacion}}</label>
+                <br><span>{{detalleInstalacion.fechaCancelacion}}</span>
+            </div>
+            <div *ngIf="detalleInstalacion.usuarioAtencion && detalleInstalacion.fechaAtencion">
+                <br>
+                <label style="color: gray;">Atendiendo</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleInstalacion.usuarioAtencion}}</label>
+                <br><span>{{detalleInstalacion.fechaAtencion}}</span>
+            </div>
+            <div *ngIf="detalleInstalacion.usuarioInstalacion && detalleInstalacion.usuarioInstalacion">
+                <br>
+                <label style="color: gray;">Instalada por</label>&nbsp;<label
+                    style="color: #008FFF !important;">{{detalleInstalacion.usuarioInstalacion}}</label>
+                <br><span>{{detalleInstalacion.fechaInstalacion}}</span>
+            </div>
+        </div>
+    </ul>
+
+    <div *ngIf="detalleInstalacion.fkCatStatus == 2" class="row">
+        <div class="col-lg-6">
+            <div class="alert alert-primary alert-dismissible fade show t-center" role="alert"
+                style="margin-bottom: 20px;">
+                <i class="bi bi-info-circle me-1"></i>
+                Atendiendo <b>{{detalleInstalacion.usuarioAtencion}} - {{detalleInstalacion.fechaAtencion}}</b>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="alert alert-{{tiempoRestanteInstalacion != '' ? 'primary' : 'danger'}} alert-dismissible fade show t-center"
+                role="alert" style="margin-bottom: 20px;">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                <b>{{tiempoRestanteInstalacion}}</b> {{tiempoRestanteInstalacion != '' ? 'para poder finalizar la
+                instalación' : 'Fue notificado el retardo de la instalación en cuestión'}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="detalleInstalacion.fkCatStatus == 3" class="row">
+        <div class="col-lg-{{detalleInstalacion.estadoRetraso != null ? '6' : '12'}}">
+            <div class="alert alert-info alert-dismissible fade show t-center" role="alert" style="margin-bottom: 20px;">
+                <i class="bi bi-info-circle me-1"></i>
+                Instaló <b>{{detalleInstalacion.usuarioInstalacion}} - {{detalleInstalacion.fechaInstalacion}}</b>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+        <div *ngIf="detalleInstalacion.estadoRetraso != null" class="col-lg-6">
+            <div class="alert alert-warning alert-dismissible fade show t-center" role="alert"
+                style="margin-bottom: 20px;">
+                Retardo de <b>{{detalleInstalacion.estadoRetraso}}</b> en instalar
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="detalleInstalacion.fkCatStatus == 4" class="alert alert-danger alert-dismissible fade show t-center"
+        role="alert" style="margin-bottom: 20px;">
+        <i class="bi bi-info-circle me-1"></i>
+        Canceló <b>{{detalleInstalacion.usuarioCancelacion}} - {{detalleInstalacion.fechaCancelacion}}</b>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="col-12 dashboard">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Detalle instalación</h5>
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="cliente-domicilio-tab" data-bs-toggle="tab"
+                            data-bs-target="#cliente-domicilio" type="button" role="tab"
+                            aria-controls="cliente-domicilio" aria-selected="true">
+                            Cliente & Domicilio <b *ngIf="cambiosFormClienteDomicilio" class="t-red">*</b>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="instalacion-tab" data-bs-toggle="tab" data-bs-target="#instalacion"
+                            type="button" role="tab" aria-controls="instalacion" aria-selected="false"
+                            tabindex="-1">
+                            Instalación <b *ngIf="cambiosFormInstalacion" class="t-red">*</b>
+                        </button>
+                    </li>
+                    <li *ngIf="showServicePage()" class="nav-item" role="presentation">
+                        <button class="nav-link" id="servicio-tab" data-bs-toggle="tab" data-bs-target="#servicio"
+                            type="button" role="tab" aria-controls="servicio" aria-selected="false"
+                            tabindex="-1">
+                            Servicio <b *ngIf="cambiosFormServicio" class="t-red">*</b>
+                        </button>
+                    </li>
+                    <li *ngIf="showServicePage()" class="nav-item" role="presentation">
+                        <button class="nav-link" id="evidencias-tab" data-bs-toggle="tab" data-bs-target="#evidencias"
+                            type="button" role="tab" aria-controls="evidencias" aria-selected="false"
+                            tabindex="-1">
+                            Evidencias <b *ngIf="cambiosFormEvidencias" class="t-red">*</b>
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-2" id="myTabContent">
+                    <div class="tab-pane fade show active" id="cliente-domicilio" role="tabpanel"
+                        aria-labelledby="home-tab">
+                        <app-form-cliente-domicilio
+                            [formClienteDomicilio] = "this.formClienteDomicilio"
+                            [listaPoblaciones] = "this.listaPoblaciones"
+                            [detalleInstalacion] = "this.detalleInstalacion"
+                            [telefonos] = "this.telefonos"
+                            [correos] = "this.correos"
+                            [pkInstalacion] = "this.pkInstalacion"
+                        ></app-form-cliente-domicilio>
+                    </div>
+
+                    <div class="tab-pane fade" id="instalacion" role="tabpanel" aria-labelledby="contact-tab">
+                        <app-form-instalacion
+                            [formInstalacion] = "this.formInstalacion"
+                            [planes] = "this.planes"
+                            [disponibilidad] = "this.disponibilidad"
+                            [fecha] = "this.fecha"
+                        ></app-form-instalacion>
+                    </div>
+
+                    <div *ngIf="showServicePage()" class="tab-pane fade" id="servicio" role="tabpanel"
+                        aria-labelledby="contact-tab">
+                        <app-form-servicio
+                            [formServicio]="this.formServicio"
+                            [formInstalacion]="this.formInstalacion"
+                            [detalleInstalacion]="this.detalleInstalacion"
+                        ></app-form-servicio>
+                    </div>
+
+                    <div *ngIf="showServicePage()" class="tab-pane fade" id="evidencias" role="tabpanel"
+                        aria-labelledby="contact-tab">
+                        <div class="col-12">
+                            <section class="row chat-delimiter">
+                                <app-form-evidencias
+                                    [detalleInstalacion]="this.detalleInstalacion"
+                                    [evidencias]="this.evidencias"
+                                    [imagenCompletaVisible]="this.imagenCompletaVisible"
+                                    [indiceImagenActual]="this.indiceImagenActual"
+                                    [imagenCompleta]="this.imagenCompleta"
+                                ></app-form-evidencias>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align: center;">
+    <button *ngIf="pkInstalacion == 0" class="btn btn-sm btn-primary"
+        (click)="validarDataForm('insert')">Agendar</button>
+    <button *ngIf="guard.permisosModulos.instalaciones.actualizar && pkInstalacion != 0 && detalleInstalacion.fkCatStatus <= 2"
+        class="btn btn-sm btn-warning"
+        (click)="validarDataForm('update')">
+        Actualizar
+    </button>
+    <button *ngIf="guard.permisosModulos.instalaciones.atenderfinalizar && pkInstalacion != 0 && detalleInstalacion.fkCatStatus == 1"
+        class="btn btn-sm btn-primary"
+        (click)="atnederInstalacion()">
+        Comenzar
+    </button>
+    <button *ngIf="guard.permisosModulos.instalaciones.atenderfinalizar && pkInstalacion != 0 && enableFormService() && detalleInstalacion.fkCatStatus == 2 && detalleInstalacion.pkTblUsuarioAtencion == informacionPerfil.pkTblUsuario"
+        class="btn btn-sm btn-success"
+        (click)="finalizarInstalacion()">
+        Finalizar
+    </button>
+    <button *ngIf="guard.permisosModulos.instalaciones.cancelarretomar && pkInstalacion != 0 && detalleInstalacion.fkCatStatus <= 2 && detalleInstalacion.pkTblUsuarioAtencion == informacionPerfil.pkTblUsuario"
+        class="btn btn-sm btn-info"
+        (click)="instalacionNoExitosa()">
+        No exitosa
+    </button>
+    <button *ngIf="guard.permisosModulos.instalaciones.cancelarretomar && pkInstalacion != 0 && detalleInstalacion.fkCatStatus == 4"
+        class="btn btn-sm btn-warning"
+        (click)="retomarInstalacion()">
+        Retomar
+    </button>
+    <button type="button" class="btn btn-sm btn-danger" (click)="cerrarModal()">
+        {{changesInstalation() ? 'Cancelar' : 'Cerrar'}}
+    </button>
+</div>

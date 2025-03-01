@@ -1,0 +1,79 @@
+<div class="modal-body dashboard">
+    <div class="pagetitle">
+        <h1>
+            {{pkSector == 0 ? 'Registrar sector' : 'Actualizar sector'}}
+        </h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Sectores</li>
+                <li class="breadcrumb-item active">
+                    {{pkSector == 0 ? 'Registrar sector' : 'Actualizar sector'}}
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="col-12" style="margin-bottom: -10px;">
+        <div class="card">
+            <div class="card-body card-w-title">
+                <form class="row g-3" autocomplete="off" [formGroup]="formSector">
+                    <div class="col-lg-6">
+                        <label class="form-label required">Nombre sector</label>
+                        <input type="text" class="form-control" formControlName="nombre"
+                            placeholder="Nombre sector" (keypress)="soloTexto($event)" maxlength="255">
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="group-dropdown-form">
+                            <label for="dropDown" class="form-label required">Poblaciones disponibles:</label><br>
+                            <app-dropdown [options]="listaPoblaciones" (selectionChange)="seleccionPoblacion($event)" [font]="'poblaciones'"></app-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <label class="form-label required">Status</label>
+                        <select class="form-control" formControlName="activo">
+                            <option value="" style="display: none; visibility: hidden;">Elija un
+                                status</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inctivo</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" formControlName="descripcion" placeholder="Descripción"
+                            (keypress)="soloTexto($event)"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body card-w-title t-center">
+                <span *ngIf="poblacionesSeleccionadas.length == 0">
+                    Ninguna población para este sector aún
+                </span>
+                <div class="row">
+                    <div class="col-lg-6" *ngFor="let seccion of poblacionesAgrupadas">
+                        <h3 class="card-title">
+                            {{seccion.orden}}
+                        </h3>
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-md-6 t-center" *ngFor="let poblacion of seccion.poblaciones">
+                                <span>{{poblacion.label}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align: center;">
+    <button *ngIf="pkSector == 0" class="btn btn-primary" (click)="validarDataForm('insert')">Registrar</button>
+    <button *ngIf="pkSector != 0" class="btn btn-warning" (click)="validarDataForm('update')">Actualizar</button>
+    <button class="btn btn-danger" (click)="cerrarModal()">
+        {{changesSector ? 'Cancelar' : 'Cerrar'}}
+    </button>
+</div>

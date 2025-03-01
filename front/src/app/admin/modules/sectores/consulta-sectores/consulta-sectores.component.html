@@ -1,0 +1,90 @@
+<div class="pagetitle">
+    <h1>Sectores</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Sectores</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section dashboard">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body row g-3" style="margin-top: 0px;  position: relative;">
+                            <div class="col-12">
+                                <label for="dropDown" class="form-label t-bold required">Sector:</label><br>
+                                <div class="input-group">
+                                    <button *ngIf="guard.permisosModulos.sectores.agregar"
+                                        class="btn btn-primary btn-sm"
+                                        (click)="agregarSector()">
+                                        Agregar
+                                    </button>
+                                    <select class="form-control t-center form-control-sm" [(ngModel)]="sectorSelected" (change)="obtenerDetalleSector();">
+                                        <option value="" style="display: none; visibility: hidden;">Seleccione un sector</option>
+                                        <option *ngFor="let sector of listaSectores" value="{{sector.pkCatSector}}">{{sector.nombre}}</option>
+                                    </select>
+                                    <button *ngIf="guard.permisosModulos.sectores.actualizar && sectorSelected != ''"
+                                        class="btn btn-warning btn-sm"
+                                        (click)="modificarSector()">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12" *ngIf="sectorSelected != ''">
+                    <div class="card">
+                        <div class="card-body">
+                            <section>
+                                <h3 class="card-title t-center">Descripción</h3>
+    
+                                <p>{{detalleSector.descripcion ?? 'Sin descripción'}}</p>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title t-center" style="margin-bottom: -15px;">
+                                {{poblacionesSector.length == 0 ? 'Poblaciones' : poblacionesSector.length+' poblaciones'}}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body card-w-title t-center">
+                            <span *ngIf="poblacionesSector.length == 0">
+                                No se ha seleccionado ningun sector aún
+                            </span>
+                            <div class="row">
+                                <div class="col-lg-6" *ngFor="let seccion of poblacionesAgrupadas">
+                                    <h3 class="card-title">
+                                        {{seccion.orden}}
+                                    </h3>
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col-md-6 t-center" *ngFor="let poblacion of seccion.poblaciones">
+                                            <span>{{poblacion.label}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

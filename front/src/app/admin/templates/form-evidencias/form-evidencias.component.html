@@ -1,0 +1,54 @@
+<div class="filter">
+    <span *ngIf="detalleInstalacion.fkCatStatus <= 2 && !parent.validaEvidenciasSome()"
+        class="badge bg-success">
+        &nbsp;<i class="bi bi-check-circle me-1"></i>
+    </span>
+    <span *ngIf="detalleInstalacion.fkCatStatus <= 2 && parent.validaEvidenciasSome()"
+        class="badge bg-warning text-dark">
+        &nbsp;<i class="bi bi-exclamation-triangle me-1"></i>
+    </span>
+</div>
+<div class="row">
+    <div *ngFor="let item of evidencias; let i = index" class="col-lg-6">
+        <div class="card hiddable">
+            <div class="card-body card-w-title">
+                <div id="totalBloqueCerrar" class="accordion accordion-flush">
+                    <div class="accordion-item">
+                        <label class="required"
+                            style="margin-bottom: 10px; margin-left: 2px;">{{item.titulo}}</label>
+                        <div *ngIf="parent.instalacionPendienteValid()" class="input-group mb-3">
+                            <input type="file" class="form-control"
+                                (change)="onFileChange($event, item)"
+                                [disabled]="!parent.enableFormService()">
+                            <button class="btn btn-outline-secondary" data-bs-toggle="collapse"
+                                [attr.data-bs-target]="'#pre-img-'+i" aria-expanded="false"
+                                aria-controls="flush-collapseOne">
+                                <i class="bi bi-caret-up"></i>
+                            </button>
+                        </div>
+                        <div id="pre-img-{{i}}" aria-labelledby="flush-headingOne"
+                            data-bs-parent="#accordionFlushExample"
+                            class="accordion-collapse collapse show" style="margin-top: 10px;">
+                            <div class="accordion-body t-center">
+                                <div *ngIf="item.imagenBase64">
+                                    <img [src]="urlImagen(item.imagenBase64)"
+                                        alt="Imagen previsualizada" class="img-thumbnail"
+                                        (click)="abrirImagenCompleta(item.imagenBase64, i)">
+                                </div>
+                                <span *ngIf="!item.imagenBase64">No se ha seleccionado ninguna
+                                    imagen</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="overlay" *ngIf="imagenCompletaVisible">
+    <img [src]="imagenCompleta" class="imagen-completa" (click)="$event.stopPropagation()">
+    <button class="btn close-image" (click)="cerrarImagenCompleta()"><b>X</b></button>
+
+    <button class="btn btn-arrow left" (click)="irAImagenAnterior()">&#10094;</button>
+    <button class="btn btn-arrow right" (click)="irAImagenSiguiente()">&#10095;</button>
+</div>

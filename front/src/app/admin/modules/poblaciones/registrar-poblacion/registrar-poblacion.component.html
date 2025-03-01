@@ -1,0 +1,64 @@
+<div class="modal-body dashboard">
+    <div class="pagetitle">
+        <h1>
+            {{pkPoblacion == 0 ? 'Registrar población' : 'Actualizar población'}}
+        </h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Poblaciones</li>
+                <li class="breadcrumb-item active">
+                    {{pkPoblacion == 0 ? 'Registrar población' : 'Actualizar población'}}
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="col-12 dashboard" style="margin-bottom: -10px;">
+        <div class="card">
+            <div class="card-body card-w-title">
+                <form class="row g-3" autocomplete="off" [formGroup]="formPoblacion">
+                    <div class="col-6">
+                        <label class="form-label required">Nombre población</label>
+                        <input type="text" class="form-control form-control-sm" formControlName="nombrePoblacion"
+                            placeholder="Nombre población" (keypress)="soloTexto($event)" maxlength="255" (input)="generarSiglas()">
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label required">Siglas</label>
+                        <input type="text" class="form-control form-control-sm" formControlName="siglas"
+                            placeholder="Siglas" (keypress)="soloTexto($event)" maxlength="255">
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label required">Status</label>
+                        <select class="form-control form-control-sm" formControlName="status">
+                            <option value="" style="display: none; visibility: hidden;">Elija un
+                                status</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inctivo</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control form-control-sm" formControlName="descripcion" placeholder="Descripción"
+                            (keypress)="soloTexto($event)"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align: center;">
+    <button *ngIf="pkPoblacion == 0"
+        class="btn btn-sm btn-primary"
+        (click)="registrarPoblacion()">
+        Registrar
+    </button>
+    <button *ngIf="guard.permisosModulos.poblaciones.actualizar && pkPoblacion != 0"
+        class="btn btn-sm btn-warning"
+        (click)="actualizarPoblacion()">
+        Actualizar
+    </button>
+    <button class="btn btn-sm btn-danger" (click)="cerrarModal()">
+        {{this.formPoblacion.dirty ? 'Cancelar' : 'Cerrar'}}
+    </button>
+</div>
