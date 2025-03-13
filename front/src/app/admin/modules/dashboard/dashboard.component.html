@@ -10,10 +10,9 @@
 <div class="section dashboard">
     <div class="row">
         <div *ngFor="let aviso of this.estadisticas.avisosMostrandose" class="col-12" style="margin-bottom: 10px;">
-            <div class="alert alert-{{obtenerClaseAviso(aviso.tipoAviso)}}  alert-dismissible fade show" role="alert">
+            <div class="alert alert-{{obtenerClaseAviso(aviso.tipoAviso)}} fade show" role="alert">
                 <h4 class="alert-heading">{{aviso.tituloAviso}}</h4>
                 <p style="margin-bottom: 0px !important;">{{aviso.descripcion}}</p>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
 

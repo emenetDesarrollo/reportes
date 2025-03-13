@@ -5,6 +5,8 @@ namespace App\Repositories\Admin;
 use App\Models\TblAvisos;
 use App\Services\Admin\UsuarioService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AvisoRepository
 {
@@ -34,8 +36,8 @@ class AvisoRepository
                               'tipoAviso',
                               'tituloAviso',
                               'descripcion',
-                              'fechaInicio',
-                              'fechaFin',
+                              DB::raw('DATE_FORMAT(fechaInicio, "%Y-%m-%d") as fechaInicio'),
+                              DB::raw('DATE_FORMAT(fechaFin, "%Y-%m-%d") as fechaFin'),
                               'fkTblUsuarioAlta',
                               'fechaAlta'
                           );
@@ -43,15 +45,15 @@ class AvisoRepository
         switch ($busqueda) {
             case '<':
                 $query->selectRaw('"Mostrado" as status')
-                      ->whereRaw('DATE_FORMAT(fechaFin, "%d-%m-%Y") < DATE_FORMAT(NOW(), "%d-%m-%Y")');
+                      ->whereRaw('DATE_FORMAT(fechaFin, "%Y-%m-%d") < DATE_FORMAT(NOW(), "%Y-%m-%d")');
             break;
             case '=':
                 $query->selectRaw('"Mostrando" as status')
-                      ->whereRaw('DATE_FORMAT(fechaInicio, "%d-%m-%Y") <= DATE_FORMAT(NOW(), "%d-%m-%Y") AND DATE_FORMAT(fechaFin, "%d-%m-%Y") >= DATE_FORMAT(NOW(), "%d-%m-%Y")');
+                      ->whereRaw('DATE_FORMAT(fechaInicio, "%Y-%m-%d") <= DATE_FORMAT(NOW(), "%Y-%m-%d") AND DATE_FORMAT(fechaFin, "%Y-%m-%d") >= DATE_FORMAT(NOW(), "%Y-%m-%d")');
             break;
             case '>':
                 $query->selectRaw('"Por mostrar" as status')
-                      ->whereRaw('DATE_FORMAT(fechaInicio, "%d-%m-%Y") > DATE_FORMAT(NOW(), "%d-%m-%Y")');
+                      ->whereRaw('DATE_FORMAT(fechaInicio, "%Y-%m-%d") > DATE_FORMAT(NOW(), "%Y-%m-%d")');
             break;
         }
         

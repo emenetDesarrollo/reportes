@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import Chart from 'chart.js/auto';
 import { GenericService } from 'src/app/admin/services/api/generic/generic.service';
 import { MensajesService } from 'src/app/admin/services/mensajes/mensajes.service';
+import { UsuariosService } from 'src/app/admin/services/usuarios/usuarios.service';
 
 @Component({
 	selector: 'app-metricas-usuarios',
@@ -29,8 +31,10 @@ export class MetricasUsuariosComponent implements OnInit, OnDestroy{
 		}
 	];
 
+	private actualTiempo = 'month';
+
 	protected columnasTabla: any = {
-		'pkTblUsuario'   : '#',
+		'pkTblUsuario' : '#',
 		'nombre' : 'Usuario',
 		'instalacionesRetardo'  : 'Instalaciones'
 	};
@@ -40,7 +44,9 @@ export class MetricasUsuariosComponent implements OnInit, OnDestroy{
 			'center': true
 		},
 		'nombre' : {
-			'center': true
+			'center': true,
+			'emitId': true,
+			'value': 'pkTblUsuario'
 		},
 		'instalacionesRetardo' : {
 			'center': true
@@ -53,16 +59,24 @@ export class MetricasUsuariosComponent implements OnInit, OnDestroy{
 	private myChartMetricasInstalaciones: any;
 
 	protected metricas: any = {};
+	private informacionPerfil: any;
 
 	private intervalo: any;
 
 	constructor (
 		private generic: GenericService,
-		private mensajes: MensajesService
+		private mensajes: MensajesService,
+		private router: Router,
+		private apiAuth: UsuariosService
 	) {}
 
 	async ngOnInit(): Promise<void> {
-		this.cambioVisualizacion();
+		this.mensajes.mensajeEsperar();
+		
+		await this.obtenerDetallePerfilPorToken();
+		await this.obtenerMetricasUsuarios();
+
+		this.mensajes.mensajeGenericoToast('Se obtuvieron las métricas de los usuarios con éxito', 'success');
 		this.repetitiveInstruction();
 	}
 
@@ -71,6 +85,17 @@ export class MetricasUsuariosComponent implements OnInit, OnDestroy{
             await this.obtenerMetricasUsuarios();
         }, 7000);
     }
+
+	private async obtenerDetallePerfilPorToken(): Promise<any> {
+		return this.apiAuth.obtenerInformacionUsuarioPorToken(localStorage.getItem('token_emenet')).toPromise().then(
+			respuesta => {
+				this.informacionPerfil = respuesta[0];
+			},
+			error => {
+				this.mensajes.mensajeGenerico('error', 'error');
+			}
+		)
+	}
 
 	private async obtenerMetricasUsuarios(): Promise<any> {
 		const visualizacion: string = this.listaTiempo.filter(item => item.checked)[0].value ?? '';
@@ -87,9 +112,21 @@ export class MetricasUsuariosComponent implements OnInit, OnDestroy{
 			}
 		);
 	}
+
+	protected actionSelected(data: any): void {
+		if (this.informacionPerfil.pkTblUsuario == data.action) {
+			this.mensajes.mensajeGenericoToast('Sesión actual', 'info');
+			return;
+		}
+		
+		this.router.navigate(['/detalle-usuario', data.action]);
+	}
 	
 	protected cambioVisualizacion(): void {
+		if (this.actualTiempo == this.listaTiempo.find(item => item.checked).value) return;
+
 		this.mensajes.mensajeEsperar();
+		this.actualTiempo = this.listaTiempo.find(item => item.checked).value;
 
 		this.obtenerMetricasUsuarios().then(() => {
 			this.mensajes.mensajeGenericoToast('Se obtuvieron las métricas de los usuarios con éxito', 'success');
@@ -155,7 +192,7 @@ export class MetricasUsuariosComponent implements OnInit, OnDestroy{
 			data: {
 				labels: this.metricas.usuariosInstalacionesRealizadas.map((item: any) => item.usuario) ?? [],
 				datasets: [{
-					label: 'My First Dataset',
+					label: 'Instalaciones realizadas',
 					data: this.metricas.usuariosInstalacionesRealizadas.map((item: any) => item.instalaciones) ?? [],
 					backgroundColor: [
 						'rgb(255, 99, 132)',

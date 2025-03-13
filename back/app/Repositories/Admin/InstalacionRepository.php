@@ -120,31 +120,32 @@ class InstalacionRepository
                                  ->leftJoin('catPoblaciones', 'catPoblaciones.pkCatPoblacion', 'tblDetalleInstalacion.fkCatPoblacion')
                                  ->leftJoin('catClasificaciones', 'catClasificaciones.pkCatClasificacion', 'tblDetalleInstalacion.fkCatClasificacion')
                                  ->leftJoin('catStatus', 'catStatus.pkCatStatus', 'tblInstalaciones.fkCatStatus');
-    
-        $query->whereRaw('
-            CASE 
-                WHEN catStatus.nombreStatus = "Atendiendo" 
-                AND NOW() > DATE_ADD(tblInstalaciones.fechaRegistro, INTERVAL tblDetalleInstalacion.duracionEstimada HOUR)
-                THEN "Atendiendo con retardo"
-                WHEN catStatus.nombreStatus = "Instalada" 
-                AND NOW() > DATE_ADD(tblInstalaciones.fechaInstalacion, INTERVAL tblDetalleInstalacion.duracionEstimada HOUR)
-                THEN "Instalada con retardo"
-                ELSE catStatus.nombreStatus
-            END = "Atendiendo con retardo"
-        ');
-    
-        $query->orWhereRaw('
-            CASE 
-                WHEN catStatus.nombreStatus = "Atendiendo" 
-                AND NOW() > DATE_ADD(tblInstalaciones.fechaRegistro, INTERVAL tblDetalleInstalacion.duracionEstimada HOUR)
-                THEN "Atendiendo con retardo"
-                WHEN catStatus.nombreStatus = "Instalada" 
-                AND NOW() > DATE_ADD(tblInstalaciones.fechaInstalacion, INTERVAL tblDetalleInstalacion.duracionEstimada HOUR)
-                THEN "Instalada con retardo"
-                ELSE catStatus.nombreStatus
-            END = "Instalada con retardo"
-        ');
-    
+
+        $query->where(function($query) {
+            $query->whereRaw('
+                CASE 
+                    WHEN catStatus.nombreStatus = "Atendiendo" 
+                    AND NOW() > DATE_ADD(tblInstalaciones.fechaRegistro, INTERVAL tblDetalleInstalacion.duracionEstimada HOUR)
+                    THEN "Atendiendo con retardo"
+                    WHEN catStatus.nombreStatus = "Instalada" 
+                    AND NOW() > DATE_ADD(tblInstalaciones.fechaInstalacion, INTERVAL tblDetalleInstalacion.duracionEstimada HOUR)
+                    THEN "Instalada con retardo"
+                    ELSE catStatus.nombreStatus
+                END = "Atendiendo con retardo"
+            ')
+            ->orWhereRaw('
+                CASE 
+                    WHEN catStatus.nombreStatus = "Atendiendo" 
+                    AND NOW() > DATE_ADD(tblInstalaciones.fechaRegistro, INTERVAL tblDetalleInstalacion.duracionEstimada HOUR)
+                    THEN "Atendiendo con retardo"
+                    WHEN catStatus.nombreStatus = "Instalada" 
+                    AND NOW() > DATE_ADD(tblInstalaciones.fechaInstalacion, INTERVAL tblDetalleInstalacion.duracionEstimada HOUR)
+                    THEN "Instalada con retardo"
+                    ELSE catStatus.nombreStatus
+                END = "Instalada con retardo"
+            ');
+        });
+
         if ($pkUsuario != 0) {
             $query->whereIn('tblInstalaciones.fkCatStatus', [2, 3])
                   ->where('tblInstalaciones.fkUsuarioAtencion', $pkUsuario);
@@ -155,7 +156,7 @@ class InstalacionRepository
         $query->orderBy('tblInstalaciones.pkTblInstalacion', 'asc');
     
         return $query->get();
-    }    
+    }
 
     public function obtenerDetalleInstalcion ($pkInstalacion) {
        $query = TblInstalaciones::select(

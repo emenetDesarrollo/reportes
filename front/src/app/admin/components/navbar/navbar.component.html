@@ -4,11 +4,61 @@
             <img src="https://m-net.mx/Emenet_Internet/assets/img/logo1.png" alt="">
             &nbsp;&nbsp;<span class="d-none d-lg-block">Emenet</span>
         </a>
-        <i class="bi bi-list toggle-sidebar-btn" (click)="home.claseSidebar = home.claseSidebar == '' ? 'toggle-sidebar' : ''"></i>
+        <i class="bi bi-list toggle-sidebar-btn"
+            (click)="home.claseSidebar = home.claseSidebar == '' ? 'toggle-sidebar' : ''"></i>
     </div>
 
     <nav class="header-nav ms-auto">
         <ul class="d-flex align-items-center">
+            <li *ngIf="listaAvisos.length > 0" class="nav-item dropdown">
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge bg-primary badge-number">{{listaAvisos.length}}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications"
+                    style="width: 250px !important;">
+                    <div *ngFor="let aviso of listaAvisos; let i = index" class="section">
+                        <li class="notification-item" (click)="abrirAlerta(aviso)">
+                            <i *ngIf="aviso.tipoAviso == 'Informativo'" class="bi bi-info-circle text-primary"></i>
+                            <i *ngIf="aviso.tipoAviso == 'Advertencia'"
+                                class="bi bi-exclamation-circle text-warning"></i>
+                            <i *ngIf="aviso.tipoAviso == 'Urgente'" class="bi bi-x-circle text-danger"></i>
+                            <div>
+                                <h4>{{aviso.tituloAviso}}</h4>
+                                <p>{{aviso.descripcion}}</p>
+                            </div>
+                        </li>
+
+                        <li *ngIf="i < listaAvisos.length - 1">
+                            <hr class="dropdown-divider">
+                        </li>
+                    </div>
+                </ul>
+            </li>
+
+            <li *ngIf="instalacionesRetardo.length > 0" class="nav-item dropdown">
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-clock-history"></i>
+                    <span class="badge bg-danger badge-number">{{instalacionesRetardo.length}}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications"
+                    style="width: 250px !important;">
+                    <div *ngFor="let instalacion of instalacionesRetardo; let i = index" class="section">
+                        <li class="notification-item" (click)="abrirDetalleInstalacionRetardo(instalacion.pkTblInstalacion)">
+                            <i class="bi bi-x-circle text-danger"></i>
+                            <div>
+                                <h4>{{instalacion.identificador}}</h4>
+                                <p>{{instalacion.nombreCliente}}</p>
+                            </div>
+                        </li>
+
+                        <li *ngIf="i < instalacionesRetardo.length - 1">
+                            <hr class="dropdown-divider">
+                        </li>
+                    </div>
+                </ul>
+            </li>
+
             <li class="nav-item dropdown pe-3" *ngIf="informacionUsuario">
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="javascript:void(0);"
                     data-bs-toggle="dropdown">

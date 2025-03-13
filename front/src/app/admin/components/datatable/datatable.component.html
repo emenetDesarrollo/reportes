@@ -187,7 +187,7 @@
                                     </ng-container>
                                 </ng-template>
                                 <ng-template #dateSpForm>
-                                    <ng-container *ngIf="tableConfig[columna]?.dateSpForm; else deafult">
+                                    <ng-container *ngIf="tableConfig[columna]?.dateSpForm || tableConfig[columna]?.singleDate; else deafult">
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             &nbsp;&nbsp;{{ formatDate(item[columna]) }}&nbsp;&nbsp;
                                         </span>

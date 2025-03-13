@@ -41,12 +41,17 @@ export default class FGenerico {
         }
     }
 
+    public convertirAMayusculas(event: any): void {
+        event.target.value = event.target.value.toUpperCase();
+    }
+
     public is_empty(cadena: any) {
         return cadena == null || cadena == undefined || (isNaN(cadena) && cadena.trim() == '' || cadena.length == 0);
     }
 
-    protected obtenerFormatoNumero(telefono: string): string {
-        return telefono.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+    public obtenerFormatoNumero(telefono: string): string {
+        if (this.is_empty(telefono)) return 'Sin información';
+        return telefono.replace(/[^\d]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
     }
 
     public obtenerSaludo(): string {
@@ -137,7 +142,9 @@ export default class FGenerico {
         });
     }
 
-    public formatDate(dateString: string, date: boolean = true, time: boolean = true): string {
+    public formatDate(dateString: string): string {
+        if (this.is_empty(dateString) || dateString.includes('0000-00-00')) return 'Sin información';
+        const timestamp: boolean = dateString.split(' ').length > 1;
         const inputDate = new Date(dateString);
         const currentDate = new Date();
 
@@ -146,22 +153,22 @@ export default class FGenerico {
 
         const hours = inputDate.getHours();
         const minutes = inputDate.getMinutes();
-        const formattedTime = this.formatTime(hours, minutes);
+        const formattedTime = timestamp ? ' '+this.formatTime(hours, minutes) : '';
 
         if (dayDiff === 0) {
-            return `Hoy ${formattedTime}`;
+            return `Hoy${formattedTime}`;
         } else if (dayDiff === -1) {
-            return `Mañana ${formattedTime}`;
+            return `Mañana${formattedTime}`;
         } else if (dayDiff === -2) {
-            return `Pasado mañana ${formattedTime}`;
+            return `Pasado mañana${formattedTime}`;
         } else if (dayDiff === 1) {
-            return `Ayer ${formattedTime}`;
+            return `Ayer${formattedTime}`;
         } else if (dayDiff === 2) {
-            return `Antier ${formattedTime}`;
+            return `Antier${formattedTime}`;
         }
 
         const formattedDate = this.formatDateToString(inputDate);
-        return date && time ? `${formattedDate} | ${formattedTime}` : (date && !time ? formattedDate : formattedTime);
+        return timestamp ? `${formattedDate} | ${formattedTime}` : formattedDate;
     }
 
     private formatDateToString(date: Date): string {
@@ -211,5 +218,9 @@ export default class FGenerico {
     
         const containsLetter = /[a-zA-Z]/.test(texto);
         return !containsLetter;
+    }
+
+    public eliminarEspaciosBlanco(texto: string) {
+        return texto.replace(/\s+/g, '');
     }
 }

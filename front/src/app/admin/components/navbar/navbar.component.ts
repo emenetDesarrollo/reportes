@@ -1,21 +1,28 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { HomeComponent } from '../../home/home.component';
 import { MensajesService } from '../../services/mensajes/mensajes.service';
 import { LoginService } from 'src/app/auth/services/login/login.service';
 import { Router } from '@angular/router';
 import { UsuariosService } from '../../services/usuarios/usuarios.service';
 import { ModalService } from '../../services/modal/modal.service';
-import { DetalleUsuarioComponent } from '../../modules/usuarios/detalle-usuario/detalle-usuario.component';
 import { RegistrarUsuarioComponent } from '../../modules/usuarios/registrar-usuario/registrar-usuario.component';
+import { AvisosService } from '../../services/api/avisos/avisos.service';
+import { InstalacionesService } from '../../services/api/instalaciones/instalaciones.service';
+import { AgendarInstalacionComponent } from '../../modules/instalaciones/agendar-instalacion/agendar-instalacion.component';
 
 @Component({
 	selector: 'app-navbar',
 	templateUrl: './navbar.component.html',
 	styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit{
+export class NavbarComponent implements OnInit, OnDestroy{
 	protected informacionUsuario: any = undefined;
 	protected nombre: any = undefined;
+
+	protected listaAvisos: any = [];
+	protected instalacionesRetardo: any = [];
+
+	private intervalo: any;
 	
 	constructor (
 		public home: HomeComponent,
@@ -24,14 +31,25 @@ export class NavbarComponent implements OnInit{
 		private router: Router,
 		private ref: ChangeDetectorRef,
 		private apiUsuarios: UsuariosService,
-		private modal: ModalService
+		private modal: ModalService,
+		private avisos: AvisosService,
+		private instalaciones: InstalacionesService
 	) {}
 
 	async ngOnInit(): Promise<void> {
 		this.obtenerDatosUsuarios();
+		this.obtenerInstalacionesRetardoUsuario();
+		this.repetitiveInstruction();
 	}
 
-	public obtenerDatosUsuarios(): void {
+	private repetitiveInstruction(): void {
+        this.intervalo = setInterval(async () => {
+            await this.obtenerAvisos();
+            await this.obtenerInstalacionesRetardoUsuario();
+        }, 7000);
+    }
+
+	private obtenerDatosUsuarios(): void {
 		this.informacionUsuario = undefined;
 		this.nombre = '';
 
@@ -54,6 +72,52 @@ export class NavbarComponent implements OnInit{
 				}
 			)
 		}
+	}
+
+	private obtenerAvisos(): void {
+		this.avisos.obtenerAvisos('=').subscribe(
+			respuesta => {
+				this.listaAvisos = respuesta.avisos;
+			}, error => {
+				this.mensajes.mensajeGenerico('error', 'error');
+			}
+		);
+	}
+
+	protected abrirAlerta(aviso: any): void {
+		let tipo = '';
+
+		switch (aviso.tipoAviso) {
+			case 'Informativo':
+				tipo = 'info';
+			break;
+			case 'Advertencia':
+				tipo = 'warning';
+			break;
+			case 'Urgente':
+				tipo = 'error';
+			break;
+		}
+
+		this.mensajes.mensajeGenerico(aviso.descripcion, tipo, aviso.tituloAviso);
+	}
+
+	private async obtenerInstalacionesRetardoUsuario(): Promise<void> {
+		return this.instalaciones.obtenerInstalacionesRetardoUsuario(0).toPromise().then(
+			respuesta => {
+				this.instalacionesRetardo = respuesta.instalaciones;
+			}, error => {
+				this.mensajes.mensajeGenerico('error', 'error');
+			}
+		);
+	}
+
+	protected abrirDetalleInstalacionRetardo(pkInstalacion: number): void {
+		const dataModal = {
+			pkInstalacion
+		};
+
+		this.modal.abrirModalConComponente(AgendarInstalacionComponent, dataModal);
 	}
 
 	protected abrirDetallePerfil(): void {
@@ -91,4 +155,8 @@ export class NavbarComponent implements OnInit{
 			}
 		);
 	}
+
+	ngOnDestroy(): void {
+        clearInterval(this.intervalo);
+    }
 }
