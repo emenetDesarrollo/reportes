@@ -8,6 +8,7 @@ Route::post('/auth/login', 'App\Http\Controllers\Auth\LoginController@login');
 Route::post('/auth', 'App\Http\Controllers\Auth\LoginController@auth');
 Route::post('/logout', 'App\Http\Controllers\Auth\LoginController@logout');
 
+// apis usuarios
 Route::post('/usuarios/obtenerInformacionUsuarioPorToken', 'App\Http\Controllers\Admin\UsuarioController@obtenerInformacionUsuarioPorToken');
 Route::get('/usuarios/obtenerInformacionUsuarioPorPk/{pkUsuario}', 'App\Http\Controllers\Admin\UsuarioController@obtenerInformacionUsuarioPorPk');
 Route::post('/usuarios/validarContraseniaActual', 'App\Http\Controllers\Admin\UsuarioController@validarContraseniaActual');
@@ -18,6 +19,7 @@ Route::get('/usuarios/obtenerListaUsuarios', 'App\Http\Controllers\Admin\Usuario
 
 // estadisticas
 Route::post('/estadisticas/obtenerEstadisticas', 'App\Http\Controllers\Admin\GenericController@obtenerEstadisticasGenerales');
+Route::get('/estadisticas/obtenerMetricasUsuarios/{visualizar}', 'App\Http\Controllers\Admin\GenericController@obtenerMetricasUsuarios');
 
 // Apis catálogos
 
@@ -51,6 +53,7 @@ Route::post('/reportes/eliminarAnexoSeguimiento', 'App\Http\Controllers\Admin\Re
 // Apis instalaciones
 Route::post('/instalaciones/agendarInstalacion', 'App\Http\Controllers\Admin\InstalacionController@agendarInstalacion');
 Route::get('/instalaciones/obtenerListaInstalacionesStatus/{status}', 'App\Http\Controllers\Admin\InstalacionController@obtenerListaInstalacionesStatus');
+Route::get('/instalaciones/obtenerInstalacionesRetardoUsuario/{pkUsuario}', 'App\Http\Controllers\Admin\InstalacionController@obtenerInstalacionesRetardoUsuario');
 Route::get('/instalaciones/obtenerDetalleInstalcion/{pk}', 'App\Http\Controllers\Admin\InstalacionController@obtenerDetalleInstalcion');
 Route::post('/instalaciones/actualizarInstalacion', 'App\Http\Controllers\Admin\InstalacionController@actualizarInstalacion');
 Route::post('/instalaciones/atnederInstalacion', 'App\Http\Controllers\Admin\InstalacionController@atnederInstalacion');

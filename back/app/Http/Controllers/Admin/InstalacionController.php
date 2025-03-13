@@ -48,6 +48,21 @@ class InstalacionController extends Controller
         }
     }
 
+    public function obtenerInstalacionesRetardoUsuario ($pkUsuario = 0) {
+        try{
+            return $this->instalacionService->obtenerInstalacionesRetardoUsuario($pkUsuario);
+        } catch( \Throwable $error ) {
+            Log::alert($error);
+            return response()->json(
+                [
+                    'error' => $error,
+                    'mensaje' => 'Upss! Ocurrió un error interno'
+                ], 
+                500
+            );
+        }
+    }
+
     public function obtenerDetalleInstalcion ($pkInstalacion) {
         try{
             return $this->instalacionService->obtenerDetalleInstalcion($pkInstalacion);

@@ -1399,3 +1399,9 @@ label {
 .w-100 {
 	width: 100% !important;
 }
+
+.btn-derecha {
+	position: absolute;
+    top: 85px;
+    right: 25px;
+}

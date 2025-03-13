@@ -129,7 +129,12 @@
                                 </ng-template>
                                 <ng-template #icono>
                                     <ng-container *ngIf="tableConfig[columna]?.icono; else linea">
-                                        <i class="{{item[columna]}}"></i>
+                                        <div class="link-modal"
+                                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                            (click)="emitirIdAccion('accionIcono', item[tableConfig[columna].value])">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<i
+                                                class="{{tableConfig[columna]?.class}}"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        </div>
                                     </ng-container>
                                 </ng-template>
                                 <ng-template #linea>
@@ -145,7 +150,10 @@
                                 <ng-template #telefono>
                                     <ng-container *ngIf="tableConfig[columna]?.telefono; else deleteColumn">
                                         <div class="link-modal" (click)="abrirOpcionesTelefono(item[columna])">
-                                            <span>{{ obtenerFormatoNumero(item[columna]) }}</span>
+                                            <span
+                                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                &nbsp;&nbsp;{{ obtenerFormatoNumero(item[columna]) }}&nbsp;&nbsp;
+                                            </span>
                                         </div>
                                     </ng-container>
                                 </ng-template>
@@ -161,7 +169,7 @@
                                     <ng-container *ngIf="tableConfig[columna]?.emitId; else location">
                                         <div class="link-modal"
                                             (click)="emitirIdAccion(item[tableConfig[columna].value], tableConfig[columna].action)">
-                                            <span>{{ item[columna] ?? 'Sin información'}}</span>
+                                            <span>&nbsp;&nbsp;{{ item[columna] ?? 'Sin información'}}&nbsp;&nbsp;</span>
                                         </div>
                                     </ng-container>
                                 </ng-template>
@@ -179,14 +187,16 @@
                                     </ng-container>
                                 </ng-template>
                                 <ng-template #dateSpForm>
-                                    <ng-container *ngIf="tableConfig[columna]?.dateSpForm || tableConfig[columna]?.singleDate; else deafult">
-                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{
-                                            formatDate(item[columna], tableConfig[columna]?.date ?? true, tableConfig[columna]?.time ?? true) }}</span>
+                                    <ng-container *ngIf="tableConfig[columna]?.dateSpForm; else deafult">
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            &nbsp;&nbsp;{{ formatDate(item[columna]) }}&nbsp;&nbsp;
+                                        </span>
                                     </ng-container>
                                 </ng-template>
                                 <ng-template #deafult>
-                                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{
-                                        item[columna] ?? 'Sin información'}}</span>
+                                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        &nbsp;&nbsp;{{ item[columna] ?? 'Sin información'}}&nbsp;&nbsp;
+                                    </span>
                                 </ng-template>
                             </td>
                         </tr>

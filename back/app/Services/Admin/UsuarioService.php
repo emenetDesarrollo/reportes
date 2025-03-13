@@ -26,7 +26,13 @@ class UsuarioService
     }
 
     public function obtenerInformacionUsuarioPorPk ( $pkUsuario ) {
-        return $this->usuarioRepository->obtenerInformacionUsuarioPorPk( $pkUsuario );
+        $detalleUsuario = $this->usuarioRepository->obtenerInformacionUsuarioPorPk( $pkUsuario );
+
+        $detalleUsuario[0]->reportesSolucionados = $this->usuarioRepository->obtenerReportesSolucionadosUsuario($pkUsuario);
+        $detalleUsuario[0]->instalacionesAgendadas = $this->usuarioRepository->obtenerInstalacionesAgendadasUsuario($pkUsuario);
+        $detalleUsuario[0]->instalacionesInstaladas = $this->usuarioRepository->obtenerInstalacionesInstaladasUsuario($pkUsuario);
+
+        return $detalleUsuario;
     }
 
     public function obtenerPkPorToken ( $token ) {

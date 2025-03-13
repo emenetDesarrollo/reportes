@@ -3,11 +3,14 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AdminGuard } from 'src/app/admin/guards/admin.guard';
 import { CatalogosService } from 'src/app/admin/services/api/catalogos/catalogos.service';
+import { InstalacionesService } from 'src/app/admin/services/api/instalaciones/instalaciones.service';
 import { SectoresService } from 'src/app/admin/services/api/sectores/sectores.service';
 import { MensajesService } from 'src/app/admin/services/mensajes/mensajes.service';
 import { UsuariosService } from 'src/app/admin/services/usuarios/usuarios.service';
 import FGenerico from 'src/app/shared/util/funciones-genericas';
 import { permisos_generales } from 'src/environments/objetos-permisos/obj-permisos-generales';
+import { AgendarInstalacionComponent } from '../../instalaciones/agendar-instalacion/agendar-instalacion.component';
+import { ModalService } from 'src/app/admin/services/modal/modal.service';
 
 @Component({
   selector: 'app-detalle-usuario',
@@ -15,6 +18,26 @@ import { permisos_generales } from 'src/environments/objetos-permisos/obj-permis
   styleUrls: ['./detalle-usuario.component.css']
 })
 export class DetalleUsuarioComponent extends FGenerico implements OnInit{
+	protected listaTiempo: any[] = [
+		{
+			value: 'week',
+			label: 'Semana',
+			checked: false
+		}, {
+			value: 'month',
+			label: 'Mes',
+			checked: true
+		}, {
+			value: 'year',
+			label: 'Año',
+			checked: false
+		}, {
+			value: 'todo',
+			label: 'Todo',
+			checked: false
+		}
+	];
+	
   	protected pkUsuario: any = 0;
 
 	protected formDetalleUsuario!: FormGroup;
@@ -35,6 +58,76 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 
 	protected poblacionesAgrupadas: any = [];
 
+	protected columnasTabla: any = {
+		'identificador'       : '#',
+		'nombreCliente'       : 'Cliente',
+		'nombreClasificacion' : 'Clasificiación',
+		'telefono'            : 'Teléfono',
+		'nombrePoblacion'     : 'Población',
+		'coordenadas'         : 'Ubicación',
+		'fecha'	              : 'Fecha',
+		'nombreStatus'	      : 'Status'
+	};
+
+	protected tableConfig: any = {
+		'identificador' : {
+			'center' : true,
+			'emitId': true,
+			'value': 'pkTblInstalacion'
+		},
+		'nombreClasificacion' : {
+			'center' : true,
+			'selectColumn' : true
+		},
+		'telefono' : {
+			'center' : true,
+			'telefono': true
+		},
+		'nombrePoblacion' : {
+			'selectColumn' : true,
+			'preSelects': localStorage.getItem('reportes_poblacionesSector'),
+			'center' : true
+		},
+		'coordenadas' : {
+			'center' : true,
+			'location': true,
+			'noFilter': true
+		},
+		'fecha' : {
+			'dateSpForm' : true,
+			'center' : true
+		},
+		'nombreStatus' : {
+			'center' : true,
+			'selectColumn' : true,
+			'dadges': true,
+			'dadgesCases': [
+				{
+					'text': 'Pendiente',
+					'color': 'warning'
+				}, {
+					'text': 'Atendiendo',
+					'color': 'primary'
+				}, {
+					'text': 'Atendiendo con retardo',
+					'color': 'danger'
+				}, {
+					'text': 'Instalada',
+					'color': 'info'
+				}, {
+					'text': 'Instalada con retardo',
+					'color': 'danger'
+				}, {
+					'text': 'No exitosa',
+					'color': 'danger'
+				}
+			]
+		},
+	}
+
+	protected datosTabla: any = [];
+	private intervalo: any;
+
 	constructor(
 		private mensajes: MensajesService,
 		private fb: FormBuilder,
@@ -43,7 +136,9 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 		private route: ActivatedRoute,
 		private catalogos: CatalogosService,
 		private sectores: SectoresService,
-		protected guard: AdminGuard
+		protected guard: AdminGuard,
+		private instalaciones: InstalacionesService,
+		private modal: ModalService
 	) {
 		super();
 	}
@@ -59,6 +154,9 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 		if (this.pkUsuario != 0) {
 			await this.obtenerListaPerfiles();
 			await this.obtenerListaSectoresSelect();
+			await this.obtenerInstalacionesRetardoUsuario().then(() => {
+				this.repetitiveInstruction();
+			});
 		}
 
 		await this.obtenerDetallePerfilPorToken().then(() => {
@@ -66,6 +164,12 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 		});
 
 		if (this.pkUsuario != 0 && !this.guard.permisosModulos.usuarios.actualizar) this.formDetalleUsuario.disable();
+	}
+
+	private repetitiveInstruction(): void {
+		this.intervalo = setInterval(async () => {
+			await this.obtenerInstalacionesRetardoUsuario();
+		}, 7000);
 	}
 
 	private crearformDetalleUsuario(): void {
@@ -434,7 +538,26 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 		}
 	}
 
+	private async obtenerInstalacionesRetardoUsuario(): Promise<void> {
+		return this.instalaciones.obtenerInstalacionesRetardoUsuario(this.pkUsuario).toPromise().then(
+			respuesta => {
+				this.datosTabla = respuesta.instalaciones;
+			}, error => {
+				this.mensajes.mensajeGenerico('error', 'error');
+			}
+		);
+	}
+
+	protected actionSelected(data: any): void {
+		const dataModal = {
+			pkInstalacion: data.action
+		};
+
+		this.modal.abrirModalConComponente(AgendarInstalacionComponent, dataModal);
+	}
+
 	ngOnDestroy(): void {
+		clearInterval(this.intervalo);
 		this.formDetalleUsuario.reset();
 	}
 }

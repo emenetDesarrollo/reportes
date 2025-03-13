@@ -19,6 +19,16 @@
 
         <div class="col-xxl-3 col-lg-4 col-sm-6">
             <div class="card info-card success">
+                <div *ngIf="guard.permisos.visitas" class="filter" style="margin-right: -20px;">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <li class="dropdown-header text-start">
+                            <h6>Opciones</h6>
+                        </li>
+
+                        <li><a class="dropdown-item" href="javascript:void(0);" [routerLink]="['consulta-visitas']">Ver</a></li>
+                    </ul>
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">Visitas <span>| pendientes</span></h5>
 
@@ -51,6 +61,16 @@
 
         <div class="col-xxl-3 col-lg-4 col-sm-6">
             <div class="card info-card primary">
+                <div *ngIf="guard.permisos.instalaciones" class="filter" style="margin-right: -20px;">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <li class="dropdown-header text-start">
+                            <h6>Opciones</h6>
+                        </li>
+
+                        <li><a class="dropdown-item" href="javascript:void(0);" [routerLink]="['consulta-instalaciones']">Ver</a></li>
+                    </ul>
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">Instalaciones <span>| Pendientes</span></h5>
 
@@ -84,6 +104,16 @@
 
         <div class="col-xxl-3 col-lg-4 col-sm-6">
             <div class="card info-card danger">
+                <div *ngIf="guard.permisos.instalaciones" class="filter" style="margin-right: -20px;">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <li class="dropdown-header text-start">
+                            <h6>Opciones</h6>
+                        </li>
+
+                        <li><a class="dropdown-item" href="javascript:void(0);" (click)="abrirModalInstalacionesRetardo()">Ver</a></li>
+                    </ul>
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">Instalaciones <span>| con retardo</span></h5>
 
@@ -117,6 +147,16 @@
 
         <div class="col-xxl-3 col-lg-12 col-sm-6">
             <div class="card info-card warning">
+                <div *ngIf="guard.permisos.reportes" class="filter" style="margin-right: -20px;">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <li class="dropdown-header text-start">
+                            <h6>Opciones</h6>
+                        </li>
+
+                        <li><a class="dropdown-item" href="javascript:void(0);" [routerLink]="['consulta-reportes']">Ver</a></li>
+                    </ul>
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">Reportes <span>| pendientes</span></h5>
 

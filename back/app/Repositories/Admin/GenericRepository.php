@@ -4,11 +4,13 @@ namespace App\Repositories\Admin;
 
 use App\Models\TblInstalaciones;
 use App\Models\TblReportes;
+use App\Models\TblUsuarios;
 use App\Models\TblVisitas;
 use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 use DateTime;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class GenericRepository
@@ -166,5 +168,176 @@ class GenericRepository
         });
     
         return $resultado;
-    }   
+    }
+
+    public function obtenerUsuariosRetardoInstalacion ($visualizar) {
+        $query = TblUsuarios::select(
+                                'tblUsuarios.pkTblUsuario',
+                                DB::raw('CONCAT(tblUsuarios.nombre, " ", tblUsuarios.aPaterno) AS nombre'),
+                                DB::raw('COUNT(tblInstalaciones.pkTblInstalacion) AS instalacionesRetardo')
+                            )
+                            ->join('tblInstalaciones', function ($join) {
+                                $join->on('tblUsuarios.pkTblUsuario', '=', 'tblInstalaciones.fkUsuarioAtencion')
+                                     ->where('tblInstalaciones.fkCatStatus', '=', 2);
+                                $join->orOn('tblUsuarios.pkTblUsuario', '=', 'tblInstalaciones.fkUsuarioInstalacion')
+                                     ->where('tblInstalaciones.fkCatStatus', '=', 3);
+                            })
+                            ->join('tblDetalleInstalacion', 'tblDetalleInstalacion.fkTblInstalacion', '=', 'tblInstalaciones.pkTblInstalacion')
+                            ->whereRaw('NOW() > DATE_ADD(tblInstalaciones.fechaAtencion, INTERVAL tblDetalleInstalacion.duracionEstimada HOUR)')
+                            ->whereIn('tblInstalaciones.fkCatStatus', [2, 3])
+                            ->groupBy('tblUsuarios.pkTblUsuario', 'tblUsuarios.nombre', 'tblUsuarios.aPaterno');
+    
+        switch ($visualizar) {
+            case 'week':
+                $query->where(function ($where) {
+                    $where->where(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 2)
+                                    ->whereRaw('WEEK(tblInstalaciones.fechaAtencion) = WEEK(now())');
+                        })
+                        ->orWhere(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 3)
+                                    ->whereRaw('WEEK(tblInstalaciones.fechaInstalacion) = WEEK(now())');
+                        });
+                });
+                break;
+    
+            case 'month':
+                $query->where(function ($where) {
+                    $where->where(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 2)
+                                    ->whereRaw('DATE_FORMAT(tblInstalaciones.fechaAtencion, "%m %Y") = DATE_FORMAT(now(), "%m %Y")');
+                        })
+                        ->orWhere(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 3)
+                                    ->whereRaw('DATE_FORMAT(tblInstalaciones.fechaInstalacion, "%m %Y") = DATE_FORMAT(now(), "%m %Y")');
+                        });
+                });
+                break;
+    
+            case 'year':
+                $query->where(function ($where) {
+                    $where->where(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 2)
+                                    ->whereYear('tblInstalaciones.fechaAtencion', '=', date('Y'));
+                        })
+                        ->orWhere(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 3)
+                                    ->whereYear('tblInstalaciones.fechaInstalacion', '=', date('Y'));
+                        });
+                });
+                break;
+        }
+    
+        return $query->get();
+    }
+
+    public function obtenerUsuariosReportesSolucionados ($visualizar) {
+        $query = TblUsuarios::select(
+                                DB::raw('concat(tblUsuarios.nombre, " ", tblUsuarios.aPaterno) as usuario'),
+                                DB::raw('count(tblReportes.pkTblReporte) as reportes')
+                            )
+                            ->join('tblReportes', function ($join) {
+                                $join->on('tblReportes.fkUsuarioSoluciono', 'tblUsuarios.pkTblUsuario')
+                                     ->where('tblReportes.fkCatStatus', '=', 5);
+                            })
+                            ->groupBy('tblUsuarios.nombre', 'tblUsuarios.aPaterno');
+        
+        switch ($visualizar) {
+            case 'week':
+                $query->where(function ($where) {
+                    $where->where(function ($orWhere) {
+                            $orWhere->where('tblReportes.fkCatStatus', 2)
+                                    ->whereRaw('WEEK(tblReportes.fechaAtencion) = WEEK(now())');
+                        })
+                        ->orWhere(function ($orWhere) {
+                            $orWhere->where('tblReportes.fkCatStatus', 5)
+                                    ->whereRaw('WEEK(tblReportes.fechaSoluciono) = WEEK(now())');
+                        });
+                });
+                break;
+    
+            case 'month':
+                $query->where(function ($where) {
+                    $where->where(function ($orWhere) {
+                            $orWhere->where('tblReportes.fkCatStatus', 2)
+                                    ->whereRaw('DATE_FORMAT(tblReportes.fechaAtencion, "%m %Y") = DATE_FORMAT(now(), "%m %Y")');
+                        })
+                        ->orWhere(function ($orWhere) {
+                            $orWhere->where('tblReportes.fkCatStatus', 5)
+                                    ->whereRaw('DATE_FORMAT(tblReportes.fechaSoluciono, "%m %Y") = DATE_FORMAT(now(), "%m %Y")');
+                        });
+                });
+                break;
+    
+            case 'year':
+                $query->where(function ($where) {
+                    $where->where(function ($orWhere) {
+                            $orWhere->where('tblReportes.fkCatStatus', 2)
+                                    ->whereYear('tblReportes.fechaAtencion', '=', date('Y'));
+                        })
+                        ->orWhere(function ($orWhere) {
+                            $orWhere->where('tblReportes.fkCatStatus', 5)
+                                    ->whereYear('tblReportes.fechaSoluciono', '=', date('Y'));
+                        });
+                });
+                break;
+        }
+
+        return $query->get();
+    }
+
+    public function obtenerUsuariosInstalacionesRealizadas ($visualizar) {
+        $query = TblUsuarios::select(
+                                DB::raw('concat(tblUsuarios.nombre, " ", tblUsuarios.aPaterno) as usuario'),
+                                DB::raw('count(tblInstalaciones.pkTblInstalacion) as instalaciones')
+                            )
+                            ->join('tblInstalaciones', function ($join) {
+                                $join->on('tblInstalaciones.fkUsuarioInstalacion', 'tblUsuarios.pkTblUsuario')
+                                     ->where('tblInstalaciones.fkCatStatus', '=', 3);
+                            })
+                            ->groupBy('tblUsuarios.nombre', 'tblUsuarios.aPaterno');
+
+        switch ($visualizar) {
+            case 'week':
+                $query->where(function ($where) {
+                    $where->where(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 2)
+                                    ->whereRaw('WEEK(tblInstalaciones.fechaAtencion) = WEEK(now())');
+                        })
+                        ->orWhere(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 3)
+                                    ->whereRaw('WEEK(tblInstalaciones.fechaInstalacion) = WEEK(now())');
+                        });
+                });
+                break;
+    
+            case 'month':
+                $query->where(function ($where) {
+                    $where->where(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 2)
+                                    ->whereRaw('DATE_FORMAT(tblInstalaciones.fechaAtencion, "%m %Y") = DATE_FORMAT(now(), "%m %Y")');
+                        })
+                        ->orWhere(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 3)
+                                    ->whereRaw('DATE_FORMAT(tblInstalaciones.fechaInstalacion, "%m %Y") = DATE_FORMAT(now(), "%m %Y")');
+                        });
+                });
+                break;
+    
+            case 'year':
+                $query->where(function ($where) {
+                    $where->where(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 2)
+                                    ->whereYear('tblInstalaciones.fechaAtencion', '=', date('Y'));
+                        })
+                        ->orWhere(function ($orWhere) {
+                            $orWhere->where('tblInstalaciones.fkCatStatus', 3)
+                                    ->whereYear('tblInstalaciones.fechaInstalacion', '=', date('Y'));
+                        });
+                });
+                break;
+        }
+
+        return $query->get();
+    }
 }

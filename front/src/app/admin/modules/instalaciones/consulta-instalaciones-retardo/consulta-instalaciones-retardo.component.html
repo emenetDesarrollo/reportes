@@ -1,0 +1,21 @@
+<div class="modal-body dashboard">
+    <div class="pagetitle">
+        <h1>Instalaciones con retardo</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Instalaciones</li>
+                <li class="breadcrumb-item active">Instalaciones con retardo</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="col-12 dashboard" style="margin-bottom: 20px;">
+        <app-datatable [columnasTabla]="columnasTabla" [tableConfig]="tableConfig" [datosTabla]="datosTabla"
+            (actionSelected)="actionSelected($event)" [tableType]="'dynamic'"></app-datatable>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align: center;">
+    <button class="btn btn-sm btn-success" (click)="exportarExcel()">Exportar</button>
+    <button class="btn btn-sm btn-danger" (click)="cerrarModal()">Cerrar</button>
+</div>

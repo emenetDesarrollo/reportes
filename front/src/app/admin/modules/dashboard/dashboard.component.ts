@@ -3,6 +3,9 @@ import { GenericService } from '../../services/api/generic/generic.service';
 import { MensajesService } from '../../services/mensajes/mensajes.service';
 import Chart from 'chart.js/auto';
 import { CatalogosService } from '../../services/api/catalogos/catalogos.service';
+import { AdminGuard } from '../../guards/admin.guard';
+import { ModalService } from '../../services/modal/modal.service';
+import { ConsultaInstalacionesRetardoComponent } from '../instalaciones/consulta-instalaciones-retardo/consulta-instalaciones-retardo.component';
 
 @Component({
     selector: 'app-dashboard',
@@ -22,7 +25,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     constructor(
         private apiGenerica: GenericService,
         private mensajes: MensajesService,
-        private catalogos: CatalogosService
+        private catalogos: CatalogosService,
+        protected guard: AdminGuard,
+        private modal: ModalService
     ) { }
 
     async ngOnInit(): Promise<void> {
@@ -106,7 +111,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (this.myChartEstadisticasAgrupadas) {
             this.myChartEstadisticasAgrupadas.destroy();
         }
-
+    
         const config: any = {
             type: 'line',
             data: {
@@ -133,11 +138,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 responsive: true,
                 animation: {
                     duration: 0
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             },
         };
-
+    
         this.myChartEstadisticasAgrupadas = new Chart("estadisticasAgrupadas", config);
+    }
+
+    protected abrirModalInstalacionesRetardo(): void {
+        this.modal.abrirModalConComponente(ConsultaInstalacionesRetardoComponent);
     }
 
     ngOnDestroy(): void {

@@ -18,4 +18,8 @@ export class GenericService {
 	public obtenerEstadisticas(data: any): Observable<any> {
 		return this.http.post<any>(`${api}/estadisticas/obtenerEstadisticas`, data);
 	}
+	
+	public obtenerMetricasUsuarios(visualizacion: string): Observable<any> {
+		return this.http.get<any>(`${api}/estadisticas/obtenerMetricasUsuarios/${visualizacion}`);
+	}
 }

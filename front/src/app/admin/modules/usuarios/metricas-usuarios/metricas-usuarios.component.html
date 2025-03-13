@@ -1,0 +1,70 @@
+<div class="pagetitle">
+    <h1>Métricas</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Usuarios</li>
+            <li class="breadcrumb-item active">Métricas</li>
+        </ol>
+    </nav>
+
+    <app-dropdown class="btn-derecha" [options]="listaTiempo" [font]="'tiempo'" [type]="'simple'" (selectionChange)="cambioVisualizacion()"></app-dropdown>
+</div>
+
+<section class="section dashboard">
+    <div class="row">
+        <div class="col-xxl-3 col-lg-12">
+            <div class="row">
+                <div class="col-xxl-12 col-md-6 col-12" style="margin-bottom: -10px;">
+                    <div class="card">
+                        <div class="card-body card-w-title">
+                            <canvas id="metricasInstalaciones"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="(metricas?.usuariosInstalacionesRealizadas?.length ?? 0) > 0" class="col-xxl-12 col-md-6 col-12">
+                    <div class="card">
+                        <div class="card-body card-w-title t-center">
+                            <label style="font-weight: bold !important; color: gray;">No 1.</label>&nbsp;<label
+                                style="font-weight: bold !important; color: #ff0000 !important;">
+                                {{masInstalaciones}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-6 col-lg-12" style="margin-bottom: 20px !important;">
+            <div class="row">
+                <div class="col-12" style="margin-bottom: -10px !important;">
+                    <div class="card">
+                        <div class="card-body card-w-title t-center">
+                            <label style="font-weight: bold !important; color: #012970 !important; font-size: 16px !important;">Empleados que han presentado retardo en actividades</label>
+                        </div>
+                    </div>
+                </div>
+                <app-datatable [columnasTabla]="columnasTabla" [tableConfig]="tableConfig" [datosTabla]="datosTabla"></app-datatable>
+            </div>
+        </div>
+        <div class="col-xxl-3 col-lg-12">
+            <div class="row">
+                <div class="col-xxl-12 col-md-6 col-12" style="margin-bottom: -10px;">
+                    <div class="card">
+                        <div class="card-body card-w-title">
+                            <canvas id="metricasReportes"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="(metricas?.usuariosReportesSolucionados?.length ?? 0) > 0" class="col-xxl-12 col-md-6 col-12">
+                    <div class="card">
+                        <div class="card-body card-w-title t-center">
+                            <label style="font-weight: bold !important; color: gray;">No 1.</label>&nbsp;<label
+                                style="font-weight: bold !important; color: #ff0000 !important;">
+                                {{masReportes}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

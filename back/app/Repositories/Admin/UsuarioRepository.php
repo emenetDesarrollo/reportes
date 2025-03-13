@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Admin;
 
+use App\Models\TblInstalaciones;
+use App\Models\TblReportes;
 use App\Models\TblSesiones;
 use App\Models\TblUsuarios;
 use Carbon\Carbon;
@@ -21,6 +23,24 @@ class UsuarioRepository
         $usuario = TblUsuarios::where('tblUsuarios.pkTblUsuario', $pkUsuario);
 
         return $usuario->get();
+    }
+
+    public function obtenerReportesSolucionadosUsuario ($pkUsuario) {
+        $query = TblReportes::where('fkUsuarioSoluciono', $pkUsuario);
+
+        return $query->count();
+    }
+
+    public function obtenerInstalacionesAgendadasUsuario ($pkUsuario) {
+        $query = TblInstalaciones::where('fkUsuarioRegistro', $pkUsuario);
+
+        return $query->count();
+    }
+
+    public function obtenerInstalacionesInstaladasUsuario ($pkUsuario) {
+        $query = TblInstalaciones::where('fkUsuarioInstalacion', $pkUsuario);
+
+        return $query->count();
     }
 
     public function obtenerListaUsuarios () {

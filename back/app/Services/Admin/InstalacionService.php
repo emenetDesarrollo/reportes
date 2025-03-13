@@ -50,6 +50,22 @@ class InstalacionService
         );
     }
 
+    public function obtenerInstalacionesRetardoUsuario ($pkUsuario) {
+        $instalaciones = $this->instalacionRepository->obtenerInstalacionesRetardoUsuario($pkUsuario);
+
+        foreach ($instalaciones as $instalacion) {            
+            $instalacion->telefono = json_decode($instalacion->telefonos)[0]->telefono;
+        }
+
+        return response()->json(
+            [
+                'instalaciones' => $instalaciones,
+                'mensaje' => 'Se agendó la instalación con éxito, puede validar la acción en la ventana de instalaciones pendientes'
+            ],
+            200
+        );
+    }
+
     public function obtenerDetalleInstalcion ($pkInstalacion) {
         $datalleInstalacion = $this->instalacionRepository->obtenerDetalleInstalcion($pkInstalacion)[0];
 

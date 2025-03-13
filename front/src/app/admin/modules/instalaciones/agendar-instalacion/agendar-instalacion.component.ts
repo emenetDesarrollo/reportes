@@ -564,7 +564,7 @@ export class AgendarInstalacionComponent extends FGenerico implements OnInit{
 			return;
 		}
 
-		this.mensajes.mensajeConfirmacionCustom('¿Está seguro de finalizar la instalación?', 'question', 'Finalizar instlación').then(
+		this.mensajes.mensajeConfirmacionCustom('¿Está seguro de finalizar la instalación?', 'question', 'Finalizar instalación').then(
 			res => {
 				if (!res.isConfirmed) return;
 

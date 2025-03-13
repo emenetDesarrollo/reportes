@@ -32,4 +32,19 @@ class GenericController extends Controller
             );
         }
     }
+
+    public function obtenerMetricasUsuarios ($visualizar) {
+        try{
+            return $this->genericService->obtenerMetricasUsuarios($visualizar);
+        } catch( \Throwable $error ) {
+            Log::alert($error);
+            return response()->json(
+                [
+                    'error' => $error,
+                    'mensaje' => 'Upss! Ocurrió un error interno'
+                ], 
+                500
+            );
+        }
+    }
 }

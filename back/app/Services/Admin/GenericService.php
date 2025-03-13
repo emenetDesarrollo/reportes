@@ -47,4 +47,22 @@ class GenericService
             200
         );
     }
+
+    public function obtenerMetricasUsuarios ($visualizar) {
+        $usuariosRetardoInstalacion = $this->genericRepository->obtenerUsuariosRetardoInstalacion($visualizar);
+        $usuariosReportesSolucionados = $this->genericRepository->obtenerUsuariosReportesSolucionados($visualizar);
+        $usuariosInstalacionesRealizadas = $this->genericRepository->obtenerUsuariosInstalacionesRealizadas($visualizar);
+
+        return response()->json(
+            [
+                'metricas' => [
+                    'usuariosRetardoInstalacion' => $usuariosRetardoInstalacion,
+                    'usuariosReportesSolucionados' => $usuariosReportesSolucionados,
+                    'usuariosInstalacionesRealizadas' => $usuariosInstalacionesRealizadas
+                ],
+                'mensaje' => 'Se obtuvieron las métricas de los usuarios con éxito'
+            ],
+            200
+        );
+    }
 }

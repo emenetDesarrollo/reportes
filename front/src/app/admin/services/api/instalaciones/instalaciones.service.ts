@@ -19,6 +19,10 @@ export class InstalacionesService {
 		return this.http.get<any>(`${api}/instalaciones/obtenerListaInstalacionesStatus/${status}`);
 	}
 
+	public obtenerInstalacionesRetardoUsuario(pkUsuario: number): Observable<any> {
+		return this.http.get<any>(`${api}/instalaciones/obtenerInstalacionesRetardoUsuario/${pkUsuario}`);
+	}
+
 	public obtenerDetalleInstalcion(pkInstalacion: number): Observable<any> {
 		return this.http.get<any>(`${api}/instalaciones/obtenerDetalleInstalcion/${pkInstalacion}`);
 	}

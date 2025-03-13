@@ -1,19 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { InstalacionesService } from 'src/app/admin/services/api/instalaciones/instalaciones.service';
+import { Component, OnInit } from '@angular/core';
 import { MensajesService } from 'src/app/admin/services/mensajes/mensajes.service';
 import { ModalService } from 'src/app/admin/services/modal/modal.service';
-import { AgendarInstalacionComponent } from '../agendar-instalacion/agendar-instalacion.component';
 import { ExcelService } from 'src/app/shared/util/excel.service';
 import FGenerico from 'src/app/shared/util/funciones-genericas';
+import { AgendarInstalacionComponent } from '../agendar-instalacion/agendar-instalacion.component';
+import { InstalacionesService } from 'src/app/admin/services/api/instalaciones/instalaciones.service';
 
 @Component({
-	selector: 'app-consulta-instalaciones',
-	templateUrl: './consulta-instalaciones.component.html',
-	styleUrls: ['./consulta-instalaciones.component.css']
+	selector: 'app-consulta-instalaciones-retardo',
+	templateUrl: './consulta-instalaciones-retardo.component.html',
+	styleUrls: ['./consulta-instalaciones-retardo.component.css']
 })
-export class ConsultaInstalacionesComponent extends FGenerico implements OnInit, OnDestroy{
-	protected statusConsulta: number = 1;
-
+export class ConsultaInstalacionesRetardoComponent extends FGenerico implements OnInit{
 	protected columnasTabla: any = {
 		'identificador'       : '#',
 		'nombreCliente'       : 'Cliente',
@@ -79,46 +77,38 @@ export class ConsultaInstalacionesComponent extends FGenerico implements OnInit,
 				}
 			]
 		},
-	}
+	};
 
 	protected datosTabla: any = [];
 	private intervalo: any;
 
-	constructor (
-		private instalaciones: InstalacionesService,
+	constructor(
 		private mensajes: MensajesService,
+		private excel: ExcelService,
 		private modal: ModalService,
-		private excel: ExcelService
+		private instalaciones: InstalacionesService
 	) {
 		super();
 	}
 
-	ngOnInit(): void {
-		this.enviarBusqueda();
-	}
-
-	private repetitiveInstruction(): void {
-		this.intervalo = setInterval(async () => {
-			await this.obtenerListaInstalacionesStatus();
-		}, 7000);
-	}
-
-	protected enviarBusqueda () {
+	async ngOnInit(): Promise<void> {
 		this.mensajes.mensajeEsperar();
-		this.clearValues();
-		this.obtenerListaInstalacionesStatus().then(() => {
-			this.mensajes.mensajeGenericoToast(
-				this.datosTabla.length > 0 ? 'Se obtuvo la lista de instalaciones con éxito' : 'No se encontraron registros de instalaciones en este status',
-				this.datosTabla.length > 0 ? 'success' : 'warning'
-			);
+		await this.obtenerInstalacionesRetardoUsuario().then(() => {
+			this.mensajes.cerrarMensajes();
 			this.repetitiveInstruction();
 		});
 	}
 
-	protected obtenerListaInstalacionesStatus (): Promise<any> {
-		return this.instalaciones.obtenerListaInstalacionesStatus(this.statusConsulta).toPromise().then(
+	private repetitiveInstruction(): void {
+		this.intervalo = setInterval(async () => {
+			await this.obtenerInstalacionesRetardoUsuario();
+		}, 7000);
+	}
+
+	private async obtenerInstalacionesRetardoUsuario(): Promise<void> {
+		return this.instalaciones.obtenerInstalacionesRetardoUsuario(0).toPromise().then(
 			respuesta => {
-				this.datosTabla = respuesta.data.listaInstalaciones;
+				this.datosTabla = respuesta.instalaciones;
 			}, error => {
 				this.mensajes.mensajeGenerico('error', 'error');
 			}
@@ -130,13 +120,17 @@ export class ConsultaInstalacionesComponent extends FGenerico implements OnInit,
 			pkInstalacion: data.action
 		};
 
-		this.modal.abrirModalConComponente(AgendarInstalacionComponent, dataModal);
+		this.cerrarModal();
+		this.mensajes.mensajeEsperar();
+		setTimeout(() => {
+			this.modal.abrirModalConComponente(AgendarInstalacionComponent, dataModal);
+		}, 500);
 	}
 
 	protected exportarExcel () : void {
 		this.mensajes.mensajeEsperar();
 
-		const nombreExcel = 'Lista de instalaciones '+ (this.statusConsulta == 1 ? 'pendientes' : (this.statusConsulta == 2 ? 'realizadas' : 'no exitosas')) + ' - ' + this.getCurrentDateFormatted();
+		const nombreExcel = 'Lista de poblaciones - ' + this.getCurrentDateFormatted();
 
 		this.excel.exportarExcel(
 			this.datosTabla,
@@ -145,9 +139,14 @@ export class ConsultaInstalacionesComponent extends FGenerico implements OnInit,
 		);
 	}
 
-	private clearValues () {
+	private clearValues (): void {
 		clearInterval(this.intervalo);
 		this.datosTabla = [];
+	}
+
+	protected cerrarModal(): void {
+		this.clearValues();
+		this.modal.cerrarModal();
 	}
 
 	ngOnDestroy(): void {
