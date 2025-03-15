@@ -92,7 +92,6 @@ export class MetricasUsuariosComponent implements OnInit, OnDestroy{
 				this.informacionPerfil = respuesta[0];
 			},
 			error => {
-				this.mensajes.mensajeGenerico('error', 'error');
 			}
 		)
 	}
@@ -108,7 +107,6 @@ export class MetricasUsuariosComponent implements OnInit, OnDestroy{
 				this.actualizarGraficaMetricasReportes();
 				this.actualizarGraficaMetricasInstalaciones();
 			}, error => {
-				this.mensajes.mensajeGenerico('error', 'error');
 			}
 		);
 	}

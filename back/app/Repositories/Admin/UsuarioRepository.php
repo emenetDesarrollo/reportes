@@ -12,15 +12,44 @@ use Illuminate\Support\Facades\Log;
 class UsuarioRepository
 {
     public function obtenerInformacionUsuarioPorToken ( $token ) {
-        $usuario = TblSesiones::select('tblUsuarios.*')
+        $usuario = TblSesiones::select(
+                                  'tblUsuarios.pkTblUsuario',
+                                  'tblUsuarios.nombre',
+                                  'tblUsuarios.aPaterno',
+                                  'tblUsuarios.aMaterno',
+                                  'tblUsuarios.correo',
+                                  'tblUsuarios.password',
+                                  'tblUsuarios.fechaAlta',
+                                  'tblUsuarios.activo',
+                                  'tblUsuarios.sectores',
+                                  'tblUsuarios.fkCatPerfil',
+                                  'catPerfiles.nombre as perfil',
+                                  'tblUsuarios.permisos',
+                              )
                               ->join('tblUsuarios', 'tblUsuarios.pkTblUsuario', 'tblSesiones.fkTblUsuario')
+                              ->join('catPerfiles', 'catPerfiles.pkCatPerfil', 'tblUsuarios.fkCatPerfil')
 							  ->where('tblSesiones.token', $token);
 
         return $usuario->get();
     }
 
     public function obtenerInformacionUsuarioPorPk ( $pkUsuario ) {
-        $usuario = TblUsuarios::where('tblUsuarios.pkTblUsuario', $pkUsuario);
+        $usuario = TblUsuarios::select(
+                                  'tblUsuarios.pkTblUsuario',
+                                  'tblUsuarios.nombre',
+                                  'tblUsuarios.aPaterno',
+                                  'tblUsuarios.aMaterno',
+                                  'tblUsuarios.correo',
+                                  'tblUsuarios.password',
+                                  'tblUsuarios.fechaAlta',
+                                  'tblUsuarios.activo',
+                                  'tblUsuarios.sectores',
+                                  'tblUsuarios.fkCatPerfil',
+                                  'catPerfiles.nombre as perfil',
+                                  'tblUsuarios.permisos',
+                              )
+                              ->join('catPerfiles', 'catPerfiles.pkCatPerfil', 'tblUsuarios.fkCatPerfil')
+                              ->where('tblUsuarios.pkTblUsuario', $pkUsuario);
 
         return $usuario->get();
     }

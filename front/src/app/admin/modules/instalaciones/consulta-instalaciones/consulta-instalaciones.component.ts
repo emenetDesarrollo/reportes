@@ -120,7 +120,6 @@ export class ConsultaInstalacionesComponent extends FGenerico implements OnInit,
 			respuesta => {
 				this.datosTabla = respuesta.data.listaInstalaciones;
 			}, error => {
-				this.mensajes.mensajeGenerico('error', 'error');
 			}
 		);
 	}

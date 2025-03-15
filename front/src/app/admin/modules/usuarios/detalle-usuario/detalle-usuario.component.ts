@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AdminGuard } from 'src/app/admin/guards/admin.guard';
 import { CatalogosService } from 'src/app/admin/services/api/catalogos/catalogos.service';
 import { InstalacionesService } from 'src/app/admin/services/api/instalaciones/instalaciones.service';
@@ -48,6 +48,7 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 
 	protected listaPerfiles: any = [];
 
+	protected informacionSesion: any = {};
 	protected informacionPerfil: any = {};
 
 	protected showOldPassword = false;
@@ -138,7 +139,8 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 		private sectores: SectoresService,
 		protected guard: AdminGuard,
 		private instalaciones: InstalacionesService,
-		private modal: ModalService
+		private modal: ModalService,
+		private router: Router
 	) {
 		super();
 	}
@@ -150,20 +152,38 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 
 		this.crearformDetalleUsuario();
 		this.crearFormCambioContrasenia();
-
-		if (this.pkUsuario != 0) {
-			await this.obtenerListaPerfiles();
-			await this.obtenerListaSectoresSelect();
-			await this.obtenerInstalacionesRetardoUsuario().then(() => {
-				this.repetitiveInstruction();
-			});
-		}
-
+		
 		await this.obtenerDetallePerfilPorToken().then(() => {
+			if (
+				this.pkUsuario == this.informacionSesion.pkTblUsuario ||
+				(this.informacionSesion.pkTblUsuario != 1 && this.informacionSesion.perfil == 'Administrador')
+			) {
+				this.router.navigate(['**']);
+				return;
+			}
+		});
+
+		await this.obtenerListaPerfiles();
+		await this.obtenerListaSectoresSelect();
+		await this.obtenerInstalacionesRetardoUsuario().then(() => {
+			this.repetitiveInstruction();
+		});
+
+		await this.obtenerInformacionUsuarioPorPk().then(() => {
 			this.mensajes.mensajeGenericoToast('Se obtuvó la información con éxito', 'success');
 		});
 
 		if (this.pkUsuario != 0 && !this.guard.permisosModulos.usuarios.actualizar) this.formDetalleUsuario.disable();
+	}
+
+	private async obtenerDetallePerfilPorToken(): Promise<any> {
+		return this.apiAuth.obtenerInformacionUsuarioPorToken(localStorage.getItem('token_emenet')).toPromise().then(
+			respuesta => {
+				this.informacionSesion = respuesta[0];
+			},
+			error => {
+			}
+		)
 	}
 
 	private repetitiveInstruction(): void {
@@ -210,28 +230,16 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 		})
 	}
 
-	private async obtenerDetallePerfilPorToken(): Promise<any> {
-		if (this.pkUsuario != 0) {
-			return this.apiAuth.obtenerInformacionUsuarioPorPk(this.pkUsuario).toPromise().then(
-				respuesta => {
-					this.informacionPerfil = respuesta[0];
-					this.cargarFormModificacionPerfil();
-				},
-				error => {
-					this.mensajes.mensajeGenerico('error', 'error');
-				}
-			)
-		} else {
-			return this.apiAuth.obtenerInformacionUsuarioPorToken(localStorage.getItem('token_emenet')).toPromise().then(
-				respuesta => {
-					this.informacionPerfil = respuesta[0];
-					this.cargarFormModificacionPerfil();
-				},
-				error => {
-					this.mensajes.mensajeGenerico('error', 'error');
-				}
-			)
-		}
+	private async obtenerInformacionUsuarioPorPk(): Promise<any> {
+		return this.apiAuth.obtenerInformacionUsuarioPorPk(this.pkUsuario).toPromise().then(
+			respuesta => {
+				this.informacionPerfil = respuesta[0];
+				this.cargarFormModificacionPerfil();
+			},
+			error => {
+				this.mensajes.mensajeGenerico('error', 'error');
+			}
+		)
 	}
 
 	private cargarFormModificacionPerfil(): void {
@@ -377,7 +385,7 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 								return;
 							}
 
-							this.obtenerDetallePerfilPorToken().then(() => {
+							this.obtenerInformacionUsuarioPorPk().then(() => {
 								this.formDetalleUsuario.markAsPristine();
 								this.mensajes.mensajeGenericoToast(respuesta.mensaje, 'success');
 							});
@@ -464,7 +472,7 @@ export class DetalleUsuarioComponent extends FGenerico implements OnInit{
 
 									this.formCambioContrasenia.reset();
 		
-									this.obtenerDetallePerfilPorToken().then(() => {
+									this.obtenerInformacionUsuarioPorPk().then(() => {
 										this.formDetalleUsuario.markAsPristine();
 										this.formCambioContrasenia.markAsPristine();
 										this.mensajes.mensajeGenericoToast(respuesta.mensaje, 'success');

@@ -36,7 +36,7 @@
                 </ul>
             </li>
 
-            <li *ngIf="instalacionesRetardo.length > 0" class="nav-item dropdown">
+            <li *ngIf="(informacionUsuario?.perfil ?? '') == 'Administrador' && instalacionesRetardo.length > 0" class="nav-item dropdown">
                 <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-clock-history"></i>
                     <span class="badge bg-danger badge-number">{{instalacionesRetardo.length}}</span>
@@ -69,7 +69,7 @@
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
                         <h6>{{nombre}}</h6>
-                        <span>{{informacionUsuario.perfil ?? 'Administrador'}}</span>
+                        <span>{{informacionUsuario.perfil ?? ''}}</span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">

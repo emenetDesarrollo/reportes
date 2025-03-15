@@ -114,7 +114,6 @@ export class ConsultaVisitasComponent extends FGenerico implements OnInit{
 			respuesta => {
 				this.datosTabla = respuesta.data.listaVisitas;
 			}, error => {
-				this.mensajes.mensajeGenerico('error', 'error');
 			}
 		);
 	}

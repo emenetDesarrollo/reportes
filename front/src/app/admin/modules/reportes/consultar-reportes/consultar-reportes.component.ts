@@ -112,7 +112,6 @@ export class ConsultarReportesComponent extends FGenerico{
 			respuesta => {
 				this.datosTabla = respuesta.data.listaReportes;
 			}, error => {
-				this.mensajes.mensajeGenerico('error', 'error');
 			}
 		);
 	}

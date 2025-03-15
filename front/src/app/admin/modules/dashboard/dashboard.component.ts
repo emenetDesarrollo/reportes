@@ -45,7 +45,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             respuesta => {
                 this.listaPoblaciones = respuesta.data.listaPoblaciones;
             }, error => {
-                this.mensajes.mensajeGenerico('error', 'error');
             }
         );
     }
@@ -82,7 +81,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.estadisticas = respuesta.estadisticas;
                 this.actualizarGraficaEstadisticasAgrupadas();
             }, error => {
-                this.mensajes.mensajeGenerico('error', 'error');
             }
         );
     }

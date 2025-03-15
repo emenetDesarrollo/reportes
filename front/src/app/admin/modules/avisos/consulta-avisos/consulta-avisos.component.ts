@@ -98,7 +98,6 @@ export class ConsultaAvisosComponent implements OnInit{
 			respuesta => {
 				this.datosTabla = respuesta.avisos;
 			}, error => {
-				this.mensajes.mensajeGenerico('error', 'error');
 			}
 		);
 	}

@@ -42,7 +42,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
 		this.repetitiveInstruction();
 	}
 
-	private repetitiveInstruction(): void {
+	private async repetitiveInstruction(): Promise<void> {
         this.intervalo = setInterval(async () => {
             await this.obtenerAvisos();
             await this.obtenerInstalacionesRetardoUsuario();
@@ -79,7 +79,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
 			respuesta => {
 				this.listaAvisos = respuesta.avisos;
 			}, error => {
-				this.mensajes.mensajeGenerico('error', 'error');
+				if (!navigator.onLine) this.mensajes.mensajeGenerico('No hay conexión a internet', 'warning', 'Upss...!');
 			}
 		);
 	}
@@ -107,7 +107,6 @@ export class NavbarComponent implements OnInit, OnDestroy{
 			respuesta => {
 				this.instalacionesRetardo = respuesta.instalaciones;
 			}, error => {
-				this.mensajes.mensajeGenerico('error', 'error');
 			}
 		);
 	}

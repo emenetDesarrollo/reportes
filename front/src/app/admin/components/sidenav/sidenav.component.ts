@@ -44,6 +44,7 @@ export class SidenavComponent {
 				this.modal.abrirModalConComponente(RegistrarAvisoComponent, {}, 'lg-modal');
 			break;
 			case 'registrar-usuario':
+				this.router.navigate(['/']);
 				this.modal.abrirModalConComponente(RegistrarUsuarioComponent);
 			break;
 			case 'consulta-usuarios':

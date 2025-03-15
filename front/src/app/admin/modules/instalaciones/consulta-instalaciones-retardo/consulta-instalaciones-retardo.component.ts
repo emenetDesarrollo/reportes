@@ -110,7 +110,6 @@ export class ConsultaInstalacionesRetardoComponent extends FGenerico implements 
 			respuesta => {
 				this.datosTabla = respuesta.instalaciones;
 			}, error => {
-				this.mensajes.mensajeGenerico('error', 'error');
 			}
 		);
 	}

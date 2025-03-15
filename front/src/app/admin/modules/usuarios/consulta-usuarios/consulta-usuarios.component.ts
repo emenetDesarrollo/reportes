@@ -92,7 +92,6 @@ export class ConsultaUsuariosComponent extends FGenerico implements OnInit, OnDe
 			respuesta => {
 				this.datosTabla = respuesta.data.listaUsuarios;
 			}, error => {
-				this.mensajes.mensajeGenerico('error', 'error');
 			}
 		);
 	}
@@ -109,7 +108,6 @@ export class ConsultaUsuariosComponent extends FGenerico implements OnInit, OnDe
 				this.informacionPerfil = respuesta[0];
 			},
 			error => {
-				this.mensajes.mensajeGenerico('error', 'error');
 			}
 		)
 	}
@@ -117,6 +115,11 @@ export class ConsultaUsuariosComponent extends FGenerico implements OnInit, OnDe
 	protected actionSelected(data: any): void {
 		if (this.informacionPerfil.pkTblUsuario == data.action) {
 			this.mensajes.mensajeGenericoToast('Sesión actual', 'info');
+			return;
+		}
+
+		if (this.informacionPerfil.pkTblUsuario != 1 && this.informacionPerfil.perfil == 'Administrador') {
+			this.mensajes.mensajeGenericoToast('No se puede módificar el perfil de otro administrador', 'warning');
 			return;
 		}
 
